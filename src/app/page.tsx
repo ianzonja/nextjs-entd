@@ -3,120 +3,141 @@ import AppNavigation from "@/components/app-navigation";
 import { QueryBuilderComponent } from "@syncfusion/ej2-react-querybuilder";
 import { DrawerProps, RadioChangeEvent, Space, Radio, Button, Drawer, Collapse, MenuProps, Dropdown, Typography, Input, Select } from "antd";
 import { PlusOutlined, DashboardOutlined, FastBackwardOutlined, DownOutlined, StepBackwardOutlined, StepForwardOutlined, FastForwardOutlined, PlusCircleOutlined, LinkOutlined, BankOutlined, EditOutlined, DeleteOutlined, UserOutlined, CalendarOutlined, AppstoreOutlined, MessageOutlined, SettingOutlined, InboxOutlined } from '@ant-design/icons';
-import { APP_CLIENT_INTERNALS } from "next/dist/shared/lib/constants";
 import { registerLicense } from '@syncfusion/ej2-base';
 import { useCallback, useEffect, useState } from "react";
-import { group } from "console";
 
 registerLicense(
   "Ngo9BigBOggjHTQxAR8/V1NAaF1cXmhLYVJyWmFZfVpgdV9EYVZRTGY/P1ZhSXxXdkdjXn5dcnVVTmZVU00="
 );
 
-const syncFusionJson2: any[] = [
-  { 
-    "isComplex": true, 
-    "ignoreCase": true, 
-    "ignoreAccent": false, 
-    "condition": "and", 
-    "predicates": [
-      { 
-        "isComplex": true, 
-        "ignoreCase": true, 
-        "ignoreAccent": false, 
-        "condition": "or", 
-        "predicates": [
-          { 
-            "isComplex": false, 
-            "field": "StateID", 
-            "operator": "equal", 
-            "value": "4", 
-            "ignoreCase": true, 
-            "ignoreAccent": false 
-          }, 
-          { 
-            "isComplex": false, 
-            "field": "StateID", 
-            "operator": "equal", 
-            "value": "5", 
-            "ignoreCase": true, 
-            "ignoreAccent": false 
-          }
-        ] 
-      }
-    ] 
-  }
-]
+// const inputData = {
+//   table: null,
+//   queryBuilderRule: [],
+//   groupBy: [],
+//   aggregations: []
+// }
 
-const syncfusionJson: any[] = [
+const inputData = {
+  table: 'clients',
+  queryBuilderRule: [
+    {
+      "isComplex": true,
+      "condition": "or",
+      "predicates": [
+        {
+          "isComplex": true,
+          "condition": "and",
+          "predicates": [
+            {
+              "isComplex": true,
+              "condition": "or",
+              "predicates": [
+                {
+                  "isComplex": false,
+                  "field": "f",
+                  "operator": "equal",
+                  "value": "8",
+                },
+                {
+                  "isComplex": false,
+                  "field": "g",
+                  "operator": "equal",
+                  "value": "8",
+                }
+              ]
+            },
+            {
+              "isComplex": false,
+              "field": "i",
+              "operator": "equal",
+              "value": "8",
+            }
+          ]
+        },
+        {
+          "isComplex": true,
+          "condition": "and",
+          "predicates": [
+            {
+              "isComplex": false,
+              "field": "h",
+              "operator": "equal",
+              "value": "8",
+            },
+          ]
+        }
+      ]
+    }
+  ],
+  groupBy: [
+    {
+      FieldName: 'i'
+    },
+    {
+      FieldName: 'g'
+    }
+  ],
+  aggregations: [
+    {
+      FieldName: 'i',
+      AggregateFunction: 'max'
+    },
+    {
+      FieldName: 'g',
+      AggregateFunction: 'min'
+    }
+  ]
+}
+
+const tableData = [
   {
-    "isComplex": true,
-    "ignoreCase": true,
-    "ignoreAccent": false,
-    "condition": "or",
-    "predicates": [
+    name: 'invoices',
+    properties: [
       {
-        "isComplex": true,
-        "ignoreCase": true,
-        "ignoreAccent": false,
-        "condition": "and",
-        "predicates": [
-          {
-            "isComplex": true,
-            "ignoreCase": true,
-            "ignoreAccent": false,
-            "condition": "or",
-            "predicates": [
-              {
-                "isComplex": false,
-                "field": "a",
-                "operator": "equal",
-                "value": "8",
-                "ignoreCase": true,
-                "ignoreAccent": false
-              },
-              {
-                "isComplex": false,
-                "field": "e",
-                "operator": "equal",
-                "value": "8",
-                "ignoreCase": true,
-                "ignoreAccent": false
-              }
-            ]
-          },
-          {
-            "isComplex": false,
-            "field": "b",
-            "operator": "equal",
-            "value": "8",
-            "ignoreCase": true,
-            "ignoreAccent": false
-          }
-        ]
+        name: 'a',
+        type: 'number'
       },
       {
-        "isComplex": true,
-        "ignoreCase": true,
-        "ignoreAccent": false,
-        "condition": "and",
-        "predicates": [
-          {
-            "isComplex": false,
-            "field": "c",
-            "operator": "equal",
-            "value": "8",
-            "ignoreCase": true,
-            "ignoreAccent": false
-          },
-          {
-            "isComplex": false,
-            "field": "d",
-            "operator": "equal",
-            "value": "8",
-            "ignoreCase": true,
-            "ignoreAccent": false
-          }
-        ]
+        name: 'b',
+        type: 'number'
+      }
+    ]
+  },
+  {
+    name: 'contracts',
+    properties: [
+      {
+        name: 'c',
+        type: 'string'
+      },
+      {
+        name: 'd',
+        type: 'number'
+      },
+      {
+        name: 'e',
+        type: 'string'
+      }
+    ]
+  },
+  {
+    name: 'clients',
+    properties: [
+      {
+        name: 'f',
+        type: 'number'
+      },
+      {
+        name: 'g',
+        type: 'string'
+      },
+      {
+        name: 'h',
+        type: 'number'
+      },
+      {
+        name: 'i',
+        type: 'number'
       }
     ]
   }
@@ -208,100 +229,132 @@ export default function Home() {
   const [navigationData, setNavigationData] = useState<any[]>([])
   const [open, setOpen] = useState(false);
   const [placement, setPlacement] = useState<DrawerProps['placement']>('right');
+  const [showAfterTableSelected, setShowAfterTableSelected] = useState<boolean>(false)
+  const [queryBuilderElements, setQueryBuilderElements] = useState<any[]>([])
+  const [queryBulderRule, setQueryBuilderRule] = useState<any>()
+  const [query, setQuery] = useState<any>({
+    entitySlug: '',
+    GroupBy: [],
+    Aggregations: [],
+    Where: []
+  })
+  const [tablesDrodpdownDefaultValue, setTableDropdownDefaultValue] = useState<string>('Select table')
+  const [selectedTables, setSelectedTables] = useState<any[]>([])
+  const [tableDropdownItems, setTableDropdownItems] = useState<any[]>([])
+  const [selectedTableProperties, setSelectedTableProperties] = useState<any[]>([])
+  const [groupByDropdowns, setGroupByDropdowns] = useState<any[]>([])
+  const [groupByDropdownItems, setGroupByDropdownItems] = useState<any[]>([])
+  const [aggregationFieldDropdowns, setAggregationFieldDropdowns] = useState<any[]>([])
+  const [aggregationFieldDropdownItems, setAggregationFieldDropdownItems] = useState<any[]>()
+  const [aggregateDropdowns, setAggregateDropdowns] = useState<any[]>([])
+  const [aggregateDropdownItems, setAggregateDropdownItems] = useState<any[]>([
+    {
+      value: 'count',
+      label: 'Count'
+    },
+    {
+      value: 'sum',
+      label: 'Sum'
+    },
+    {
+      value: 'average',
+      label: 'Average'
+    },
+    {
+      value: 'min',
+      label: 'Min'
+    },
+    {
+      value: 'max',
+      label: 'Max'
+    }
+  ])
+
   useEffect(() => {
     setNavigationData(data)
+    let tableDropdownData = []
+    for (const table of tableData) {
+      tableDropdownData.push({
+        value: table.name,
+        label: table.name
+      })
+    }
+    console.log(inputData.table)
+    setTableDropdownItems(tableDropdownData)
+
+    let array = []
+    array.push({value: null})
+    if (inputData && inputData.table) {
+      const oldQuery = query
+      setSelectedTables([{value: inputData.table}])
+      setTableDropdownDefaultValue(inputData.table)
+      for (const table of tableData) {
+        if (table.name === inputData.table) {
+          const queryBuilderFields = []
+          const dropdownElements = []
+          for (const field of table.properties) {
+            queryBuilderFields.push({
+              field: field.name,
+              label: field.name,
+              type: field.type
+            })
+            dropdownElements.push({
+              value: field.name,
+              label: field.name
+            })
+          }
+          setQueryBuilderElements(queryBuilderFields)
+          console.log('setting dropdown elements za selected table properties')
+          console.log(dropdownElements)
+          setSelectedTableProperties(dropdownElements)
+          setGroupByDropdownItems(dropdownElements)
+          setAggregationFieldDropdownItems(dropdownElements)
+        }
+      }
+      setShowAfterTableSelected(true)
+    }
+    else setSelectedTables([...array])
+    if (inputData && inputData.queryBuilderRule) {
+      const rule = inputData.queryBuilderRule.map(setRule)[0]
+      setQueryBuilderRule(rule)
+    }
+    if (inputData && inputData.groupBy && inputData.groupBy.length > 0) {
+      let selectedGroupByValues = []
+      for (const gb of inputData.groupBy) {
+        selectedGroupByValues.push({ value: gb.FieldName })
+      }
+      setGroupByDropdowns(selectedGroupByValues)
+    } else {
+      setGroupByDropdowns([...array])
+    }
+    if (inputData && inputData.aggregations && inputData.aggregations.length > 0) {
+      const aggregationFields = []
+      const aggregationMethods = []
+      for (const aggregation of inputData.aggregations) {
+        aggregationFields.push({
+          value: aggregation.FieldName
+        })
+        aggregationMethods.push({
+          value: aggregation.AggregateFunction
+        })
+      }
+      setAggregationFieldDropdowns(aggregationFields)
+      setAggregateDropdowns(aggregationMethods)
+    } else {
+      setAggregationFieldDropdowns([...array])
+      setAggregateDropdowns([...array])
+    }
+    const newQuery: any = {}
+    if (inputData && inputData.table && inputData.table !== null) newQuery['entitySlug'] = inputData.table
+    else newQuery['entitySlug'] = ''
+    if (inputData && inputData.queryBuilderRule) newQuery['Where'] = inputData.queryBuilderRule
+    else newQuery['Where'] = []
+    if (inputData && inputData.groupBy) newQuery['GroupBy'] = inputData.groupBy
+    else newQuery['GroupBy'] = []
+    if (inputData && inputData.aggregations) newQuery['Aggregations'] = inputData.aggregations
+    else newQuery['GroupBy'] = []
+    setQuery(newQuery)
   }, [])
-
-  const rule = {
-    'condition': 'or',
-    'rules': [
-      {
-        label: 'Title',
-        field: 'Title',
-        type: 'String',
-        operator: 'endswith',
-        value: 'representative'
-      }
-    ]
-  };
-
-  let columnData = [
-    { field: 'EmployeeID', label: 'EmployeeID', type: 'number' },
-    { field: 'FirstName', label: 'FirstName', type: 'string' },
-    { field: 'TitleOfCourtesy', label: 'Title Of Courtesy', type: 'boolean', values: ['Mr.', 'Mrs.'] },
-    { field: 'Title', label: 'Title', type: 'string' },
-    { field: 'HireDate', label: 'HireDate', type: 'date', format: 'dd/MM/yyyy' },
-    { field: 'Country', label: 'Country', type: 'string' },
-    { field: 'City', label: 'City', type: 'string' }
-  ];
-
-  const columnData2 = [
-    { field: 'a', label: 'a', type: 'number' },
-    { field: 'b', label: 'b', type: 'number' },
-    { field: 'c', label: 'c', type: 'string' },
-    { field: 'd', label: 'd', type: 'number' },
-    { field: 'e', label: 'e', type: 'string' }
-  ]
-
-  const columnData3 = [
-    { field: 'StateID', label: 'State ID', type: 'number' }
-  ]
-
-  const rule2 = {
-    'condition': 'or',
-    'rules': [
-      {
-        'condition': 'and',
-        'rules': [
-          {
-            'condition': 'or',
-            'rules': [
-              {
-                'label': 'a',
-                'field': 'a',
-                'type': 'Number',
-                'operator': 'equal',
-                'value': '8'
-              },
-              {
-                'label': 'e',
-                'field': 'e',
-                'type': 'Number',
-                'operator': 'equal',
-                'value': '8'
-              }
-            ]
-          },
-          {
-            'label': 'b',
-            'field': 'b',
-            'type': 'Number',
-            'operator': 'equal',
-            'value': '8'
-          }
-        ]
-      },
-      {
-        'condition': 'and',
-        'rules': [
-          {
-            'label': 'c',
-            'field': 'c',
-            'type': 'Number',
-            'operator': 'equal',
-            'value': '8'
-          },
-          {
-            'label': 'd',
-            'field': 'd',
-            'type': 'Number',
-            'operator': 'equal',
-            'value': '8'
-          }
-        ]
-      }
-    ]
-  }
 
   const setRule = (json: any) => {
     if (!json) return null;
@@ -320,8 +373,53 @@ export default function Home() {
     }
   }
 
-  const rule3 = syncfusionJson.map(setRule)
-  const rule4 = rule3[0]
+  const revertRule = (json: any) => {
+    if (!json) return null
+    if (!json.rules) {
+      console.log(json)
+      return {
+        isComplex: false,
+        field: json.field,
+        operator: json.operator,
+        value: json.value, // Ensure numeric values are converted to strings
+      };
+    } else {
+      console.log(json)
+      const predicates = json.rules.map((rule: any) => revertRule(rule));
+      return {
+        isComplex: true,
+        condition: json.condition,
+        predicates: predicates,
+      };
+    }
+  }
+
+  const onRuleChange = (data: any) => {
+    const revertedRule = revertRule(data.rule)
+    const oldQuery = query
+    const newQuery: any = {}
+
+    if (oldQuery && oldQuery !== null && oldQuery['entitySlug']) {
+      newQuery['entitySlug'] = oldQuery['entitySlug']
+    } else {
+      newQuery['entitySlug'] = ''
+    }
+
+    if (oldQuery && oldQuery !== null && oldQuery['GroupBy']) {
+      newQuery['GroupBy'] = oldQuery['GroupBy']
+    } else {
+      newQuery['GroupBy'] = []
+    }
+
+    if (oldQuery && oldQuery !== null && oldQuery['Aggregations']) {
+      newQuery['Aggregations'] = oldQuery['Aggregations']
+    } else {
+      newQuery['Aggregations'] = []
+    }
+    
+    newQuery['Where'] = [revertedRule]
+    setQuery(newQuery)
+  }
 
   const showDrawer = () => {
     setOpen(true);
@@ -359,128 +457,61 @@ export default function Home() {
     return array
   }
 
-
-  const [query, setQuery] = useState<any>({
-    entitySlug: '',
-    GroupBy: [],
-    Aggregations: []
-  })
-  const [tables, setTables] = useState<any[]>([])
-  const [dropdownItems, setDropdownItems] = useState<any[]>([])
-  const [groupByDropdowns, setGroupByDropdowns] = useState<any[]>([])
-  const [groupByDropdownItems, setGroupByDropdownItems] = useState<any[]>([])
-  const [aggregationFieldDropdowns, setAggregationFieldDropdowns] = useState<any[]>([])
-  const [aggregationFieldDropdownItems, setAggregationFieldDropdownItems] = useState<any[]>([])
-  const [aggregateDropdowns, setAggregateDropdowns] = useState<any[]>([])
-  const [aggregateDropdownItems, setAggregateDropdownItems] = useState<any[]>([])
-
-  const items = [
-    {
-      value: 'invoices',
-      label: 'invoices',
-    },
-    {
-      value: 'contracts',
-      label: 'contracts'
-    },
-    {
-      value: 'clients',
-      label: 'clients'
-    }
-  ]
-
-  const fields = [
-    {
-      value: 'a',
-      label: 'a'
-    },
-    {
-      value: 'b',
-      label: 'b'
-    },
-    {
-      value: 'c',
-      label: 'c'
-    },
-    {
-      value: 'd',
-      label: 'd'
-    },
-    {
-      value: 'e',
-      label: 'e'
-    }
-  ]
-
-  const aggregateItems = [
-    {
-      value: 'count',
-      label: 'Count'
-    },
-    {
-      value: 'sum',
-      label: 'Sum'
-    },
-    {
-      value: 'average',
-      label: 'Average'
-    },
-    {
-      value: 'min',
-      label: 'Min'
-    },
-    {
-      value: 'max',
-      label: 'Max'
-    }
-  ]
-  useEffect(() => {
-    setDropdownItems(items)
-    setGroupByDropdownItems(fields)
-    setAggregationFieldDropdownItems(fields)
-    setAggregateDropdownItems(aggregateItems)
-
-    let array = []
-    array.push({value: null})
-    setTables([...array])
-    setGroupByDropdowns([...array])
-    setAggregationFieldDropdowns([...array])
-    setAggregateDropdowns([...array])
-  }, [])
-
-  const addNewTable = () => {
-    if (items.length !== tables.length) {
-      const newTables = []
-      for (let table of tables) {
-        newTables.push(table)
-      }
-      newTables.push({value: null})
-      setTables(newTables)
-      console.log(tables)
-    }
-  }
+  // const addNewTable = () => {
+  //   if (items.length !== selectedTables.length) {
+  //     const newTables = []
+  //     for (let table of selectedTables) {
+  //       newTables.push(table)
+  //     }
+  //     newTables.push({value: null})
+  //     setSelectedTables(newTables)
+  //   }
+  // }
 
   const selectTable = (data: any) => {
-    const lastElement = tables.length
-    tables[lastElement - 1].value = data
+    console.log(selectedTables)
+    console.log(data)
+    const lastElement = selectedTables.length
+    selectedTables[lastElement - 1] = { value: data }
     let newDropdownItems = []
 
-    for (const item of items) {
-      console.log(items)
-      console.log(tables)
+    for (const item of tableDropdownItems) {
       let exists = false
-      for (const table of tables) {
+      for (const table of selectedTables) {
         if (item.value === table.value) {
           exists = true
         }
       }
       if (exists === false) newDropdownItems.push({value: item.value})
     }
-    setDropdownItems(newDropdownItems)
-    if (dropdownItems.length > 0) {
+    setTableDropdownItems(newDropdownItems)
+    const queryBuilderFields = []
+    for (const table of tableData) {
+      if (table.name === data) {
+        const queryBuilderFields = []
+        const dropdownElements = []
+        for (const field of table.properties) {
+          queryBuilderFields.push({
+            field: field.name,
+            label: field.name,
+            type: field.type
+          })
+          dropdownElements.push({
+            value: field.name,
+            label: field.name
+          })
+        }
+        setQueryBuilderElements(queryBuilderFields)
+        setGroupByDropdownItems(dropdownElements)
+        setAggregationFieldDropdownItems(dropdownElements)
+        setSelectedTableProperties(dropdownElements)
+      }
+    }
+    setShowAfterTableSelected(true)
+    if (tableDropdownItems.length > 0) {
       const oldQuery = query
       const newQuery: any = {
-        entitySlug: dropdownItems[0].value
+        entitySlug: tableDropdownItems[0].value
       }
       if (oldQuery && oldQuery !== null && oldQuery['GroupBy']) {
         newQuery['GroupBy'] = oldQuery['GroupBy']
@@ -493,6 +524,11 @@ export default function Home() {
       } else {
         newQuery['Aggregations'] = []
       }
+      if (oldQuery && oldQuery !== null && oldQuery['Where']) {
+        newQuery['Where'] = oldQuery['Where']
+      }else {
+        newQuery['Where'] = []
+      }
       setQuery(newQuery)
     }
   }
@@ -504,11 +540,13 @@ export default function Home() {
     groupByDropdowns[lastElement - 1].value = data
     let newDropdownItems = []
 
-    for (const item of fields) {
-      console.log(fields)
-      console.log(groupByDropdowns)
+    for (const item of selectedTableProperties) {
       let exists = false
+      console.log('item:')
+      console.log(item)
       for (const dropdown of groupByDropdowns) {
+        console.log('dropdown:')
+        console.log(dropdown)
         if (item.value === dropdown.value) {
           exists = true
         }
@@ -539,11 +577,16 @@ export default function Home() {
     } else {
       newQuery['Aggregations'] = []
     }
+    if (oldQuery && oldQuery !== null && oldQuery['Where']) {
+      newQuery['Where'] = oldQuery['Where']
+    }else {
+      newQuery['Where'] = []
+    }
     setQuery(newQuery)
   }
 
   const addNewGroupByDropdown = () => {
-    if (fields.length !== groupByDropdowns.length) {
+    if (selectedTableProperties.length !== groupByDropdowns.length) {
       const newTables = []
       for (let table of groupByDropdowns) {
         newTables.push(table)
@@ -555,33 +598,21 @@ export default function Home() {
   }
 
   const selectAggregationField = (data: any, index: any) => {
-    console.log('pocetak select aggregation field')
     console.log(data)
+    const aggregationFieldDropdownsCopy = [...aggregationFieldDropdowns]
+    aggregationFieldDropdownsCopy[index] = { value: data}
+    setAggregationFieldDropdowns([...aggregationFieldDropdownsCopy])
     console.log(aggregationFieldDropdowns)
     console.log(aggregateDropdowns)
-    const aggregationFieldsDropdownsFromState = aggregationFieldDropdowns
-    const lastElement = aggregationFieldsDropdownsFromState.length
-    console.log('last element: ')
-    console.log(lastElement)
-    aggregationFieldsDropdownsFromState[lastElement - 1].value = data
-    let newDropdownItems = []
-    let selectedItems = []
-    for (const item of fields) {
-      console.log(fields)
-      console.log(aggregationFieldsDropdownsFromState)
-      let exists = false
-      for (const dropdown of aggregationFieldsDropdownsFromState) {
-        if (item.value === dropdown.value) {
-          exists = true
-        }
+    let aggregations = []
+    for (let i=0; i<aggregateDropdowns.length; i++) {
+      if (aggregationFieldDropdownsCopy[i].value !== null && aggregateDropdowns[i].value !== null) {
+        aggregations.push({
+          FieldName: aggregationFieldDropdownsCopy[i].value,
+          AggregateFunction: aggregateDropdowns[i].value
+        })
       }
-      if (exists === false) newDropdownItems.push({value: item.value})
     }
-    console.log('aggregations:')
-    console.log(aggregateDropdowns)
-    console.log(aggregationFieldsDropdownsFromState)
-    setAggregationFieldDropdownItems(newDropdownItems)
-    setAggregationFieldDropdowns([...aggregationFieldsDropdownsFromState])
     const oldQuery = query
     const newQuery: any = {}
     if (oldQuery && oldQuery !== null && oldQuery['GroupBy']) {
@@ -595,23 +626,17 @@ export default function Home() {
     } else {
       newQuery['entitySlug'] = ''
     }
-
-    let aggregations = []
-
-    for (let i=0; i<aggregateDropdowns.length; i++) {
-      if (aggregateDropdowns[i].value !== null && aggregationFieldsDropdownsFromState[i].value !== null) {
-        aggregations.push({
-          FieldName: aggregationFieldsDropdownsFromState[i].value,
-          AggregateFunction: aggregateDropdowns[i].value
-        })
-      }
-    }
     newQuery['Aggregations'] = aggregations
+    if (oldQuery && oldQuery !== null && oldQuery['Where']) {
+      newQuery['Where'] = oldQuery['Where']
+    }else {
+      newQuery['Where'] = []
+    }
     setQuery(newQuery)
   }
 
   const addNewAggregationFieldDropdown = () => {
-    if (fields.length !== aggregationFieldDropdowns.length) {
+    if (selectedTableProperties.length !== aggregationFieldDropdowns.length) {
       const newTables = []
       for (let table of aggregationFieldDropdowns) {
         newTables.push(table)
@@ -623,33 +648,21 @@ export default function Home() {
   }
 
   const selectAggregation = (data: any, index: any) => {
-    console.log('pocetka select aggregation')
     console.log(data)
+    const aggregationDropdownsCopy = [...aggregateDropdowns]
+    aggregationDropdownsCopy[index] = { value: data}
+    setAggregateDropdowns([...aggregationDropdownsCopy])
+    console.log(aggregationFieldDropdowns)
     console.log(aggregateDropdowns)
-    console.log(aggregationFieldDropdowns)
-    const aggregateDropdownsFromState = aggregateDropdowns
-    const lastElement = aggregateDropdownsFromState.length
-    aggregateDropdownsFromState[lastElement - 1].value = data
-    let newDropdownItems = []
-
-    for (const item of aggregateItems) {
-      console.log(aggregateItems)
-      console.log(aggregateDropdownsFromState)
-      let exists = false
-      for (const dropdown of aggregateDropdownsFromState) {
-        if (item.value === dropdown.value) {
-          exists = true
-        }
+    let aggregations = []
+    for (let i=0; i<aggregateDropdowns.length; i++) {
+      if (aggregationFieldDropdowns[i].value !== null && aggregationDropdownsCopy[i].value !== null) {
+        aggregations.push({
+          FieldName: aggregationFieldDropdowns[i].value,
+          AggregateFunction: aggregationDropdownsCopy[i].value
+        })
       }
-      if (exists === false) newDropdownItems.push({value: item.value})
     }
-    setAggregateDropdownItems(newDropdownItems)
-    setAggregateDropdowns([...aggregateDropdownsFromState])
-
-    console.log('aggregations:')
-    console.log(aggregateDropdownsFromState)
-    console.log(aggregationFieldDropdowns)
-
     const oldQuery = query
     const newQuery: any = {}
     if (oldQuery && oldQuery !== null && oldQuery['GroupBy']) {
@@ -663,27 +676,19 @@ export default function Home() {
     } else {
       newQuery['entitySlug'] = ''
     }
-
-    let aggregations = []
-
-    console.log('BEFORE FORA')
-    console.log(aggregateDropdownsFromState)
-    console.log(aggregationFieldDropdowns)
-
-    for (let i=0; i<aggregateDropdownsFromState.length; i++) {
-      if (aggregateDropdownsFromState[i].value !== null && aggregationFieldDropdowns[i].value !== null) {
-        aggregations.push({
-          FieldName: aggregationFieldDropdowns[i].value,
-          AggregateFunction: aggregateDropdownsFromState[i].value
-        })
-      }
-    }
     newQuery['Aggregations'] = aggregations
+
+    if (oldQuery && oldQuery !== null && oldQuery['Where']) {
+      newQuery['Where'] = oldQuery['Where']
+    }else {
+      newQuery['Where'] = []
+    }
     setQuery(newQuery)
+
   }
 
   const addNewAggretionOperationsDropdown = () => {
-    if (aggregateItems.length !== aggregateDropdowns.length) {
+    if (aggregateDropdownItems.length !== aggregateDropdowns.length) {
       const newTables = []
       for (let table of aggregateDropdowns) {
         newTables.push(table)
@@ -728,47 +733,51 @@ export default function Home() {
         {JSON.stringify(query)}
       </div>
       {
-        tables.map((table: any, index: number) => (
+        selectedTables.map((table: any, index: number) => (
           <div key={index}>
             <Typography.Title level={5}>Tables</Typography.Title>
             <Space.Compact>
-              <Select defaultValue="Select the table" options={dropdownItems} onSelect={selectTable}/>
+              <Select defaultValue={tablesDrodpdownDefaultValue} options={tableDropdownItems} onSelect={selectTable}/>
             </Space.Compact>
           </div>
         ))
       }
-      <PlusCircleOutlined onClick={() => { addNewTable() }}/>
       
-      <div className="control-section">
-        <QueryBuilderComponent width='100%' columns={columnData2} rule={rule4!}></QueryBuilderComponent>
-      </div>
+      {
+        showAfterTableSelected && 
+        <div className="control-section">
+          <QueryBuilderComponent width='100%' columns={queryBuilderElements} rule={queryBulderRule} ruleChange={onRuleChange}></QueryBuilderComponent>
+        </div>
+      }
 
       {
+        showAfterTableSelected && 
         groupByDropdowns.map((table: any, index: number) => (
           <div key={index}>
             <Typography.Title level={5}>Group By</Typography.Title>
             <Space.Compact>
-              <Select defaultValue="Select the property" options={groupByDropdownItems} onSelect={selectGroupBy}/>
+              <Select defaultValue={groupByDropdowns[index].value || "Select the property"} options={groupByDropdownItems} onSelect={selectGroupBy}/>
             </Space.Compact>
+            <PlusCircleOutlined onClick={() => { addNewGroupByDropdown() }}/>
           </div>
         ))
       }
-      <PlusCircleOutlined onClick={() => { addNewGroupByDropdown() }}/>
 
       {
+        showAfterTableSelected && 
         aggregateDropdowns.map((table: any, index: number) => (
           <div key={index}>
             <Typography.Title level={5}>Aggregation</Typography.Title>
             <Space.Compact>
-              <Select defaultValue={table.value || "Select the property"} options={aggregationFieldDropdownItems} onSelect={(data) => selectAggregationField(data, index)} />
+              <Select defaultValue={aggregationFieldDropdowns[index] || "Select the property"} options={aggregationFieldDropdownItems} onSelect={(data) => selectAggregationField(data, index)} />
             </Space.Compact>
             <Space.Compact>
-              <Select defaultValue={table.value || "Select the aggregation"} options={aggregateDropdownItems} onSelect={(data) => selectAggregation(data, index)} />
+              <Select defaultValue={aggregateDropdowns[index] || "Select the aggregation"} options={aggregateDropdownItems} onSelect={(data) => selectAggregation(data, index)} />
             </Space.Compact>
+            <PlusCircleOutlined onClick={() => { addNewAggregateDrodpdown(); }}/>
           </div>
         ))
       }
-      <PlusCircleOutlined onClick={() => { addNewAggregateDrodpdown(); }}/>
       
     </>
   );
