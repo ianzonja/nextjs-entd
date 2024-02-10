@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@syncfusion/ej2-dropdowns": "^24.2.4",
+    "@syncfusion/ej2-react-dropdowns": "^24.2.4",
     "@syncfusion/ej2-react-querybuilder": "^24.2.3",
     "antd": "^5.14.0",
     "next": "14.1.0",

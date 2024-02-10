@@ -1,6 +1,7 @@
 "use client";
 import AppNavigation from "@/components/app-navigation";
-import { QueryBuilderComponent } from "@syncfusion/ej2-react-querybuilder";
+import { ColumnDirective, ColumnsDirective, QueryBuilderComponent } from "@syncfusion/ej2-react-querybuilder";
+import { DropDownTree, DropDownTreeComponent, DropDownTreeModel, FieldsModel } from '@syncfusion/ej2-react-dropdowns';
 import { DrawerProps, RadioChangeEvent, Space, Radio, Button, Drawer, Collapse, MenuProps, Dropdown, Typography, Input, Select } from "antd";
 import { PlusOutlined, DashboardOutlined, FastBackwardOutlined, DownOutlined, StepBackwardOutlined, StepForwardOutlined, FastForwardOutlined, PlusCircleOutlined, LinkOutlined, BankOutlined, EditOutlined, DeleteOutlined, UserOutlined, CalendarOutlined, AppstoreOutlined, MessageOutlined, SettingOutlined, InboxOutlined } from '@ant-design/icons';
 import { registerLicense } from '@syncfusion/ej2-base';
@@ -10,84 +11,175 @@ registerLicense(
   "Ngo9BigBOggjHTQxAR8/V1NAaF1cXmhLYVJyWmFZfVpgdV9EYVZRTGY/P1ZhSXxXdkdjXn5dcnVVTmZVU00="
 );
 
-// const inputData = {
-//   table: null,
-//   queryBuilderRule: [],
-//   groupBy: [],
-//   aggregations: []
-// }
-
 const inputData = {
-  table: 'clients',
-  queryBuilderRule: [
+  table: null,
+  queryBuilderRule: [],
+  groupBy: [],
+  aggregations: []
+}
+
+const treeData = {
+  "defaultData": [
     {
-      "isComplex": true,
-      "condition": "or",
-      "predicates": [
+      "id": "01", "name": "Local Disk (C:)", "expanded": true,
+      "subChild": [
         {
-          "isComplex": true,
-          "condition": "and",
-          "predicates": [
-            {
-              "isComplex": true,
-              "condition": "or",
-              "predicates": [
-                {
-                  "isComplex": false,
-                  "field": "f",
-                  "operator": "equal",
-                  "value": "8",
-                },
-                {
-                  "isComplex": false,
-                  "field": "g",
-                  "operator": "equal",
-                  "value": "8",
-                }
-              ]
-            },
-            {
-              "isComplex": false,
-              "field": "i",
-              "operator": "equal",
-              "value": "8",
-            }
+          "id": "01-01", "name": "Program Files",
+          "subChild": [
+            { "id": "01-01-01", "name": "Windows NT" },
+            { "id": "01-01-02", "name": "Windows Mail" },
+            { "id": "01-01-03", "name": "Windows Photo Viewer" }
           ]
         },
         {
-          "isComplex": true,
-          "condition": "and",
-          "predicates": [
-            {
-              "isComplex": false,
-              "field": "h",
-              "operator": "equal",
-              "value": "8",
-            },
+          "id": "01-02", "name": "Users", "expanded": true,
+          "subChild": [
+            { "id": "01-02-01", "name": "Smith" },
+            { "id": "01-02-02", "name": "Public" },
+            { "id": "01-02-03", "name": "Admin" }
+          ]
+        },
+        {
+          "id": "01-03", "name": "Windows",
+          "subChild": [
+            { "id": "01-03-01", "name": "Boot" },
+            { "id": "01-03-02", "name": "FileManager" },
+            { "id": "01-03-03", "name": "System32" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "02", "name": "Local Disk (D:)",
+      "subChild": [
+        {
+          "id": "02-01", "name": "Personals",
+          "subChild": [
+            { "id": "02-01-01", "name": "My photo.png" },
+            { "id": "02-01-02", "name": "Rental document.docx" },
+            { "id": "02-01-03", "name": "Pay slip.pdf" }
+          ]
+        },
+        {
+          "id": "02-02", "name": "Projects",
+          "subChild": [
+            { "id": "02-02-01", "name": "ASP Application" },
+            { "id": "02-02-02", "name": "TypeScript Application" },
+            { "id": "02-02-03", "name": "React Application" }
+          ]
+        },
+        {
+          "id": "02-03", "name": "Office",
+          "subChild": [
+            { "id": "02-03-01", "name": "Work details.docx" },
+            { "id": "02-03-02", "name": "Weekly report.docx" },
+            { "id": "02-03-03", "name": "Wish list.csv" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "03", "name": "Local Disk (E:)", "icon": "folder",
+      "subChild": [
+        {
+          "id": "03-01", "name": "Pictures",
+          "subChild": [
+            { "id": "03-01-01", "name": "Wind.jpg" },
+            { "id": "03-01-02", "name": "Stone.jpg" },
+            { "id": "03-01-03", "name": "Home.jpg" }
+          ]
+        },
+        {
+          "id": "03-02", "name": "Documents",
+          "subChild": [
+            { "id": "03-02-01", "name": "Environment Pollution.docx" },
+            { "id": "03-02-02", "name": "Global Warming.ppt" },
+            { "id": "03-02-03", "name": "Social Network.pdf" }
+          ]
+        },
+        {
+          "id": "03-03", "name": "Study Materials",
+          "subChild": [
+            { "id": "03-03-01", "name": "UI-Guide.pdf" },
+            { "id": "03-03-02", "name": "Tutorials.zip" },
+            { "id": "03-03-03", "name": "TypeScript.7z" }
           ]
         }
       ]
     }
-  ],
-  groupBy: [
-    {
-      FieldName: 'i'
-    },
-    {
-      FieldName: 'g'
-    }
-  ],
-  aggregations: [
-    {
-      FieldName: 'i',
-      AggregateFunction: 'max'
-    },
-    {
-      FieldName: 'g',
-      AggregateFunction: 'min'
-    }
   ]
 }
+// const inputData = {
+//   table: 'clients',
+//   queryBuilderRule: [
+//     {
+//       "isComplex": true,
+//       "condition": "or",
+//       "predicates": [
+//         {
+//           "isComplex": true,
+//           "condition": "and",
+//           "predicates": [
+//             {
+//               "isComplex": true,
+//               "condition": "or",
+//               "predicates": [
+//                 {
+//                   "isComplex": false,
+//                   "field": "f",
+//                   "operator": "equal",
+//                   "value": "8",
+//                 },
+//                 {
+//                   "isComplex": false,
+//                   "field": "g",
+//                   "operator": "equal",
+//                   "value": "8",
+//                 }
+//               ]
+//             },
+//             {
+//               "isComplex": false,
+//               "field": "i",
+//               "operator": "equal",
+//               "value": "8",
+//             }
+//           ]
+//         },
+//         {
+//           "isComplex": true,
+//           "condition": "and",
+//           "predicates": [
+//             {
+//               "isComplex": false,
+//               "field": "h",
+//               "operator": "equal",
+//               "value": "8",
+//             },
+//           ]
+//         }
+//       ]
+//     }
+//   ],
+//   groupBy: [
+//     {
+//       FieldName: 'i'
+//     },
+//     {
+//       FieldName: 'g'
+//     }
+//   ],
+//   aggregations: [
+//     {
+//       FieldName: 'i',
+//       AggregateFunction: 'max'
+//     },
+//     {
+//       FieldName: 'g',
+//       AggregateFunction: 'min'
+//     }
+//   ]
+// }
 
 const tableData = [
   {
@@ -225,7 +317,7 @@ const data: any[] = [
   }
 ]
 
-export default function Home() {
+export default function Home(this: any) {
   const [navigationData, setNavigationData] = useState<any[]>([])
   const [open, setOpen] = useState(false);
   const [placement, setPlacement] = useState<DrawerProps['placement']>('right');
@@ -283,10 +375,10 @@ export default function Home() {
     setTableDropdownItems(tableDropdownData)
 
     let array = []
-    array.push({value: null})
+    array.push({ value: null })
     if (inputData && inputData.table) {
       const oldQuery = query
-      setSelectedTables([{value: inputData.table}])
+      setSelectedTables([{ value: inputData.table }])
       setTableDropdownDefaultValue(inputData.table)
       for (const table of tableData) {
         if (table.name === inputData.table) {
@@ -319,25 +411,25 @@ export default function Home() {
       setQueryBuilderRule(rule)
     }
     if (inputData && inputData.groupBy && inputData.groupBy.length > 0) {
-      let selectedGroupByValues = []
-      for (const gb of inputData.groupBy) {
-        selectedGroupByValues.push({ value: gb.FieldName })
-      }
+      let selectedGroupByValues: any[] = []
+      // for (const gb of inputData.groupBy) {
+      //   selectedGroupByValues.push({ value: gb.FieldName })
+      // }
       setGroupByDropdowns(selectedGroupByValues)
     } else {
       setGroupByDropdowns([...array])
     }
     if (inputData && inputData.aggregations && inputData.aggregations.length > 0) {
-      const aggregationFields = []
-      const aggregationMethods = []
-      for (const aggregation of inputData.aggregations) {
-        aggregationFields.push({
-          value: aggregation.FieldName
-        })
-        aggregationMethods.push({
-          value: aggregation.AggregateFunction
-        })
-      }
+      const aggregationFields: any[] = []
+      const aggregationMethods: any[] = []
+      // for (const aggregation of inputData.aggregations) {
+      //   aggregationFields.push({
+      //     value: aggregation.FieldName
+      //   })
+      //   aggregationMethods.push({
+      //     value: aggregation.AggregateFunction
+      //   })
+      // }
       setAggregationFieldDropdowns(aggregationFields)
       setAggregateDropdowns(aggregationMethods)
     } else {
@@ -416,7 +508,7 @@ export default function Home() {
     } else {
       newQuery['Aggregations'] = []
     }
-    
+
     newQuery['Where'] = [revertedRule]
     setQuery(newQuery)
   }
@@ -482,7 +574,7 @@ export default function Home() {
           exists = true
         }
       }
-      if (exists === false) newDropdownItems.push({value: item.value})
+      if (exists === false) newDropdownItems.push({ value: item.value })
     }
     setTableDropdownItems(newDropdownItems)
     const queryBuilderFields = []
@@ -505,6 +597,18 @@ export default function Home() {
         setGroupByDropdownItems(dropdownElements)
         setAggregationFieldDropdownItems(dropdownElements)
         setSelectedTableProperties(dropdownElements)
+        const array = [{ value: null }]
+        setGroupByDropdowns([...array])
+        setAggregationFieldDropdowns([...array])
+        setAggregateDropdowns([...array])
+        setQueryBuilderRule({})
+        const newQuery: any = {}
+        newQuery['entitySlug'] = data
+        newQuery['Where'] = []
+        newQuery['GroupBy'] = []
+        if (inputData && inputData.aggregations) newQuery['Aggregations'] = inputData.aggregations
+        else newQuery['GroupBy'] = []
+        setQuery(newQuery)
       }
     }
     setShowAfterTableSelected(true)
@@ -526,7 +630,7 @@ export default function Home() {
       }
       if (oldQuery && oldQuery !== null && oldQuery['Where']) {
         newQuery['Where'] = oldQuery['Where']
-      }else {
+      } else {
         newQuery['Where'] = []
       }
       setQuery(newQuery)
@@ -551,7 +655,7 @@ export default function Home() {
           exists = true
         }
       }
-      if (exists === false) newDropdownItems.push({value: item.value})
+      if (exists === false) newDropdownItems.push({ value: item.value })
     }
     setGroupByDropdownItems(newDropdownItems)
     const oldQuery = query
@@ -563,14 +667,14 @@ export default function Home() {
     }
 
     let groupBy = []
-    for (let i=0; i<groupByDropdowns.length; i++) {
+    for (let i = 0; i < groupByDropdowns.length; i++) {
       if (groupByDropdowns[i].value !== null) {
         groupBy.push({
           FieldName: groupByDropdowns[i].value
         })
       }
     }
-    newQuery['GroupBy']=groupBy
+    newQuery['GroupBy'] = groupBy
 
     if (oldQuery && oldQuery !== null && oldQuery['Aggregations']) {
       newQuery['Aggregations'] = oldQuery['Aggregations']
@@ -579,7 +683,7 @@ export default function Home() {
     }
     if (oldQuery && oldQuery !== null && oldQuery['Where']) {
       newQuery['Where'] = oldQuery['Where']
-    }else {
+    } else {
       newQuery['Where'] = []
     }
     setQuery(newQuery)
@@ -591,7 +695,7 @@ export default function Home() {
       for (let table of groupByDropdowns) {
         newTables.push(table)
       }
-      newTables.push({value: null})
+      newTables.push({ value: null })
       console.log(newTables)
       setGroupByDropdowns(newTables)
     }
@@ -600,12 +704,12 @@ export default function Home() {
   const selectAggregationField = (data: any, index: any) => {
     console.log(data)
     const aggregationFieldDropdownsCopy = [...aggregationFieldDropdowns]
-    aggregationFieldDropdownsCopy[index] = { value: data}
+    aggregationFieldDropdownsCopy[index] = { value: data }
     setAggregationFieldDropdowns([...aggregationFieldDropdownsCopy])
     console.log(aggregationFieldDropdowns)
     console.log(aggregateDropdowns)
     let aggregations = []
-    for (let i=0; i<aggregateDropdowns.length; i++) {
+    for (let i = 0; i < aggregateDropdowns.length; i++) {
       if (aggregationFieldDropdownsCopy[i].value !== null && aggregateDropdowns[i].value !== null) {
         aggregations.push({
           FieldName: aggregationFieldDropdownsCopy[i].value,
@@ -629,7 +733,7 @@ export default function Home() {
     newQuery['Aggregations'] = aggregations
     if (oldQuery && oldQuery !== null && oldQuery['Where']) {
       newQuery['Where'] = oldQuery['Where']
-    }else {
+    } else {
       newQuery['Where'] = []
     }
     setQuery(newQuery)
@@ -641,7 +745,7 @@ export default function Home() {
       for (let table of aggregationFieldDropdowns) {
         newTables.push(table)
       }
-      newTables.push({value: null})
+      newTables.push({ value: null })
       console.log(newTables)
       setAggregationFieldDropdowns(newTables)
     }
@@ -650,12 +754,12 @@ export default function Home() {
   const selectAggregation = (data: any, index: any) => {
     console.log(data)
     const aggregationDropdownsCopy = [...aggregateDropdowns]
-    aggregationDropdownsCopy[index] = { value: data}
+    aggregationDropdownsCopy[index] = { value: data }
     setAggregateDropdowns([...aggregationDropdownsCopy])
     console.log(aggregationFieldDropdowns)
     console.log(aggregateDropdowns)
     let aggregations = []
-    for (let i=0; i<aggregateDropdowns.length; i++) {
+    for (let i = 0; i < aggregateDropdowns.length; i++) {
       if (aggregationFieldDropdowns[i].value !== null && aggregationDropdownsCopy[i].value !== null) {
         aggregations.push({
           FieldName: aggregationFieldDropdowns[i].value,
@@ -680,7 +784,7 @@ export default function Home() {
 
     if (oldQuery && oldQuery !== null && oldQuery['Where']) {
       newQuery['Where'] = oldQuery['Where']
-    }else {
+    } else {
       newQuery['Where'] = []
     }
     setQuery(newQuery)
@@ -693,7 +797,7 @@ export default function Home() {
       for (let table of aggregateDropdowns) {
         newTables.push(table)
       }
-      newTables.push({value: null})
+      newTables.push({ value: null })
       console.log(newTables)
       setAggregateDropdowns(newTables)
     }
@@ -702,6 +806,44 @@ export default function Home() {
   const addNewAggregateDrodpdown = () => {
     addNewAggregationFieldDropdown()
     addNewAggretionOperationsDropdown()
+  }
+
+  const columns = [
+    {
+      value: '01-01',
+      text: 'Gouttes',
+      type: 'number'
+    }
+  ]
+
+  let data: { [key: string]: Object }[] = [
+    {
+      nodeId: '01', nodeText: 'Music',expanded: true, selectable: false,
+      nodeChild: [
+        { nodeId: '01-01', nodeText: 'Gouttes', type: 'number' }
+      ]
+    },
+    {
+      nodeId: '02', nodeText: 'Videos', expanded: true, selectable: false,
+      nodeChild: [
+        { nodeId: '02-01', nodeText: 'Naturals', type: 'number' },
+        { nodeId: '02-02', nodeText: 'Wild', type: 'number' },
+      ]
+    },
+    {
+      nodeId: '03', nodeText: 'Documents', expanded: true, selectable: false,
+      nodeChild: [
+        { nodeId: '03-01', nodeText: 'Environment Pollution', type: 'number' },
+        { nodeId: '03-02', nodeText: 'Global', type: 'number' },
+        { nodeId: '03-03', nodeText: 'Global2', type: 'number' },
+        { nodeId: '03-04', nodeText: 'Social', type: 'number' },
+        { nodeId: '03-05', nodeText: 'Youth', type: 'number' },
+      ]
+    },
+  ];
+  let fields: Object = { dataSource: data, value: 'nodeId', text: 'nodeText', child: 'nodeChild' };
+  const treeModel: DropDownTreeModel = {
+    fields: fields
   }
 
   return (
@@ -737,34 +879,39 @@ export default function Home() {
           <div key={index}>
             <Typography.Title level={5}>Tables</Typography.Title>
             <Space.Compact>
-              <Select defaultValue={tablesDrodpdownDefaultValue} options={tableDropdownItems} onSelect={selectTable}/>
+              <Select defaultValue={tablesDrodpdownDefaultValue} options={tableDropdownItems} onSelect={selectTable} />
             </Space.Compact>
           </div>
         ))
       }
-      
+
       {
-        showAfterTableSelected && 
+        showAfterTableSelected &&
         <div className="control-section">
-          <QueryBuilderComponent width='100%' columns={queryBuilderElements} rule={queryBulderRule} ruleChange={onRuleChange}></QueryBuilderComponent>
+          <QueryBuilderComponent width='100%' fieldMode={"DropdownTree"} fieldModel={treeModel} columns={columns} rule={queryBulderRule} ruleChange={onRuleChange}>
+            <ColumnsDirective>
+              <ColumnDirective field='01-01' label='Parent.Gouttes' type='number'/>
+          </ColumnsDirective>
+            {/* <DropDownTreeComponent fields={fields} change={onChange.bind(this)} changeOnBlur={false} placeholder="Select a folder or file" popupHeight="200px"/> */}
+          </QueryBuilderComponent>
         </div>
       }
 
       {
-        showAfterTableSelected && 
+        showAfterTableSelected &&
         groupByDropdowns.map((table: any, index: number) => (
           <div key={index}>
             <Typography.Title level={5}>Group By</Typography.Title>
             <Space.Compact>
-              <Select defaultValue={groupByDropdowns[index].value || "Select the property"} options={groupByDropdownItems} onSelect={selectGroupBy}/>
+              <Select defaultValue={groupByDropdowns[index].value || "Select the property"} options={groupByDropdownItems} onSelect={selectGroupBy} />
             </Space.Compact>
-            <PlusCircleOutlined onClick={() => { addNewGroupByDropdown() }}/>
+            <PlusCircleOutlined onClick={() => { addNewGroupByDropdown() }} />
           </div>
         ))
       }
 
       {
-        showAfterTableSelected && 
+        showAfterTableSelected &&
         aggregateDropdowns.map((table: any, index: number) => (
           <div key={index}>
             <Typography.Title level={5}>Aggregation</Typography.Title>
@@ -774,11 +921,11 @@ export default function Home() {
             <Space.Compact>
               <Select defaultValue={aggregateDropdowns[index] || "Select the aggregation"} options={aggregateDropdownItems} onSelect={(data) => selectAggregation(data, index)} />
             </Space.Compact>
-            <PlusCircleOutlined onClick={() => { addNewAggregateDrodpdown(); }}/>
+            <PlusCircleOutlined onClick={() => { addNewAggregateDrodpdown(); }} />
           </div>
         ))
       }
-      
+
     </>
   );
 }
