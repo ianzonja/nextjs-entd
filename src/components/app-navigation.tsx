@@ -100,8 +100,6 @@ export default function AppNavigation(data: any) {
     }
     const formatInitialData = () => {
         let defaultData: any[] = []
-        console.log('data na pocetku')
-        console.log(data)
         for (const d of data.data) {
             defaultData.push(setupNavigationItem(d))
         }
@@ -120,8 +118,6 @@ export default function AppNavigation(data: any) {
                 draggable: false
             }
         )
-        console.log('default data kreirano:')
-        console.log(defaultData)
         return defaultData
     }
     const [dta, setDta] = useState(() => {
@@ -130,37 +126,6 @@ export default function AppNavigation(data: any) {
     })
 
     const [tables, setTables] = useState([null])
-
-    useEffect(() => {
-        // This code will run after dta state has been updated
-        console.log('UPDATEAN JE SET DTA');
-        console.log(dta);
-    }, [dta]);
-    // const [dta, setDta] = useState<any[]>(() => { 
-    //     let defaultData: any[] = []
-    //     console.log('data na pocetku')
-    //     console.log(data)
-    //     for (const d of data) {
-    //         defaultData.push(setupNavigationItem(d))
-    //     }
-    //     defaultData.push(
-    //         {
-    //             key: 'top-level-item-add',
-    //             name: 'Add new item',
-    //             title: (
-    //                 <span className="flex w-full justify-between">
-    //                     <div className="flex">
-    //                         <span onClick={() => addNewTopLevelItem(key)}><PlusOutlined className="mr-4"/> Add new item</span>
-    //                     </div>
-    //                 </span>
-    //             ),
-    //             children: []
-    //         }
-    //     )
-    //     console.log('default data kreirano:')
-    //     console.log(defaultData)
-    //     return defaultData 
-    // });
     const [selectedIcon, setSelectedIcon] = useState({
         component: null,
         key: null
@@ -174,18 +139,10 @@ export default function AppNavigation(data: any) {
     const [component, setComponent] = useState('')
     const [action, setAction] = useState('')
 
-    console.log('line 166')
-    console.log(dta)
-
     const removeNavigationitem = (treeData: any[], objectKey: any) => {
         let tree = []
         for (const data of treeData) {
-            console.log(data.key)
-            console.log(objectKey[0])
             if (data.key !== objectKey[0]) {
-                console.log('not the same')
-                console.log(data.key)
-                console.log(objectKey)
                 if (data.children && data.children.length > 0) {
                     const objectData = removeNavigationitem(data.children, objectKey)
                     data.children = objectData
@@ -269,8 +226,6 @@ export default function AppNavigation(data: any) {
     }
 
     const addToTree: any = (tree: any[], iconComponent: any) => {
-        console.log('selected Key for adding:')
-        console.log(selectedKey)
         let refreshedTree = []
         for (const treeNode of tree) {
             if (!treeNode.children || treeNode.children === null) treeNode.children = []
@@ -278,8 +233,6 @@ export default function AppNavigation(data: any) {
                 return true
             } else {
                 const isValid = addToTree(treeNode.children, iconComponent)
-                console.log('is valid: ')
-                console.log(isValid)
                 if (isValid === true) {
                     const item = {
                         key: key,
@@ -369,22 +322,16 @@ export default function AppNavigation(data: any) {
         let result = null
         if (action === 'update') {
             result = updateTree(newData, iconComponent)
-            console.log('showing updated result')
-            console.log(result)
-            setDta([...result])
-            // callback([...result])
             setAction('')
         }
         if (action === 'add') {
             result = addToTree(newData, iconComponent)
-            console.log(result)
             setDta([...result])
             // callback([...result])
             setAction('')
         }
         if (action === 'add-top-level') {
             result = addTopLevelToTree(newData, iconComponent)
-            console.log(result)
             setDta([...result])
             // callback([...result])
             setAction('')
@@ -395,12 +342,7 @@ export default function AppNavigation(data: any) {
         setIsDeleteModalOpen(false);
         let newData = [...dta]
         let result = null
-        console.log('remove from tree - object key:' + selectedKey)
-        console.log('data from state')
-        console.log(dta)
         const processedData = removeNavigationitem(newData, selectedKey)
-        console.log('REMOVE DATA')
-        console.log(processedData)
         setDta([...processedData])
         // callback(newData)
     };
@@ -414,13 +356,9 @@ export default function AppNavigation(data: any) {
     };
 
     const onDragEnter: TreeProps['onDragEnter'] = (info) => {
-        console.log(info);
-        // expandedKeys, set it when controlled is needed
-        // setExpandedKeys(info.expandedKeys)
       };
     
       const onDrop: TreeProps['onDrop'] = (info) => {
-        console.log(info);
         const dropKey = info.node.key;
         const dragKey = info.dragNode.key;
         if (!dropKey.toString().endsWith('-add_new_nondraggable')) {
@@ -486,14 +424,10 @@ export default function AppNavigation(data: any) {
 
     // Function to handle option selection
     const handleOptionSelect = (option: any) => {
-        console.log('setting option:')
-        console.log(option)
         setSelectedKey(option);
     };
 
     const handleIconSelect = (option: any) => {
-        console.log('setting option:')
-        console.log(option)
         setSelectedIcon(option);
     };
 
@@ -517,7 +451,6 @@ export default function AppNavigation(data: any) {
     }
 
     const selectTable = (data: any) => {
-        console.log(data)
     }
 
     return (

@@ -6,6 +6,7 @@ import { DrawerProps, RadioChangeEvent, Space, Radio, Button, Drawer, Collapse, 
 import { PlusOutlined, DashboardOutlined, FastBackwardOutlined, DownOutlined, StepBackwardOutlined, StepForwardOutlined, FastForwardOutlined, PlusCircleOutlined, LinkOutlined, BankOutlined, EditOutlined, DeleteOutlined, UserOutlined, CalendarOutlined, AppstoreOutlined, MessageOutlined, SettingOutlined, InboxOutlined } from '@ant-design/icons';
 import { registerLicense } from '@syncfusion/ej2-base';
 import { useCallback, useEffect, useState } from "react";
+import Tabview from "@/components/tabview";
 
 registerLicense(
   "Ngo9BigBOggjHTQxAR8/V1NAaF1cXmhLYVJyWmFZfVpgdV9EYVZRTGY/P1ZhSXxXdkdjXn5dcnVVTmZVU00="
@@ -1771,6 +1772,10 @@ export default function Home(this: any) {
           </div>
         ))
       }
+
+      <div className="flex w-full">
+        <Tabview />
+      </div>
 
     </>
   );
