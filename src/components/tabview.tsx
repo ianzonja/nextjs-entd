@@ -120,11 +120,11 @@ export default function Tabview(data: any) {
                                     ) : (
                                         value.value === '' ? (
                                             <div>
-                                                Click on icon to edit <EditOutlined onClick={() => handleEditRequest(value.key)}/>
+                                                <EditOutlined onClick={() => handleEditRequest(value.key)}/> Click on icon to edit
                                             </div>
                                         ) : (
                                             <div>
-                                                {value.value} <EditOutlined onClick={() => handleEditRequest(value.key)}/>
+                                                <EditOutlined onClick={() => handleEditRequest(value.key)}/> {value.value}
                                             </div>
                                         )
                                     )}
@@ -133,30 +133,6 @@ export default function Tabview(data: any) {
                             key={value.key}>
                         </TabPane>
                     ))}
-                {/* <TabPane
-                    tab={
-                        <div
-                        >
-                            {editable ? (
-                                <div className="w-full">
-                                    <Input
-                                        onKeyDown={(e) => e.stopPropagation()}
-                                        onChange={(e) => handleInputTextChange(e)}
-                                        className="w-auto"
-                                        value={}
-                                    />
-                                    <Button onClick={() => handleSubmit()}>Submit</Button>
-                                </div>
-                            ) : (
-                                <div>
-                                    Click on icon to edit <EditOutlined onClick={() => handleEditRequest()}/>
-                                </div>
-                            )}
-                        </div>
-                    }
-                    key={String(key)}
-                    ></TabPane>
-                <TabPane tab="dsadad" key="2"></TabPane> */}
             </Tabs>
         </div>
       </>
