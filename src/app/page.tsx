@@ -1419,32 +1419,6 @@ export default function Home(this: any) {
     setQueryBuilderElements(treeModel)
     setShowAfterTableSelected(true)
 
-    // const queryBuilderColumnsData: any[] = []
-    // for (let table of tables) {
-    //   if
-    //   const nodeChild = []
-    //   for (let property of table.properties) {
-    //     nodeChild.push({
-    //       nodeId: table.name + '.' + property.name,
-    //       nodeText: property.name,
-    //       type: property.type
-    //     })
-    //   }
-    //   queryBuilderColumnsData.push({
-    //     nodeId: table.name,
-    //     nodeText: table.name,
-    //     expanded: true,
-    //     selectable: false,
-    //     nodeChild: nodeChild
-    //   })
-    // }
-    // let fields: Object = { dataSource: data, value: 'nodeId', text: 'nodeText', child: 'nodeChild' };
-    // const treeModel: DropDownTreeModel = {
-    //   fields: fields
-    // }
-    // setQueryBuilderColumnsData(queryBuilderColumnsData)
-    // setQueryBuilderElements(treeModel)
-
     const oldQuery = query
     const newQuery: any = {
       entitySlug: tableDropdownItems[0].value
@@ -1468,132 +1442,208 @@ export default function Home(this: any) {
     setQuery(newQuery)
   }
 
-  const selectGroupBy = (data: any) => {
-    const lastElement = groupByDropdowns.length
-    const tablePropertyArray = data.split('.')
-    const tableName = tablePropertyArray[0]
-    const selectedProperty = tablePropertyArray[1]
-    groupByDropdowns[lastElement - 1].value = tableName + '.' + selectedProperty
-    const newDropdownElements = []
+  const selectGroupBy = (data: any, index: any) => {
+    console.log(data)
+    console.log(index)
+    const dropdowns = [...groupByDropdowns]
+    const lastElement = dropdowns.length;
+    const tablePropertyArray = data.split('.');
+    const tableName = tablePropertyArray[0];
+    const selectedProperty = tablePropertyArray[1];
+    dropdowns[index] = { value: data };
+    const newDropdownElements = [];
     for (const element of selectedTableProperties) {
-      const dropdownProperties = []
-      if (element.label === tableName) {
-        for (const property of element.options) {
-          if (property.label !== selectedProperty) dropdownProperties.push({
-            label: property.label,
-            value: property.value
-          })
+        const dropdownProperties = [];
+        if (element.label === tableName) {
+            for (const property of element.options) {
+                if (property.label !== selectedProperty) dropdownProperties.push({
+                    label: property.label,
+                    value: property.value
+                });
+            }
+        } else {
+            for (const property of element.options) {
+                dropdownProperties.push({
+                    label: property.label,
+                    value: property.value
+                });
+            }
         }
-      } else {
-        for (const property of element.options) {
-          dropdownProperties.push({
-            label: property.label,
-            value: property.value
-          })
+        if (dropdownProperties.length > 0) {
+            newDropdownElements.push({
+                label: element.label,
+                options: dropdownProperties
+            });
         }
-      }
-      if (dropdownProperties.length > 0) {
-        newDropdownElements.push({
-          label: element.label,
-          options: dropdownProperties
-        })
-      }
     }
-    setGroupByDropdownItems(newDropdownElements)
-    const oldQuery = query
-    const newQuery: any = {}
+    setGroupByDropdownItems(newDropdownElements);
+    const oldQuery = query;
+    const newQuery: any = {};
     if (oldQuery && oldQuery !== null && oldQuery['entitySlug']) {
-      newQuery['entitySlug'] = oldQuery['entitySlug']
+        newQuery['entitySlug'] = oldQuery['entitySlug'];
     } else {
-      newQuery['entitySlug'] = ''
+        newQuery['entitySlug'] = '';
     }
 
-    let groupBy = []
-    for (let i = 0; i < groupByDropdowns.length; i++) {
-      if (selectedTables && selectedTables.length > 0) {
-        if (groupByDropdowns[i].value !== null) {
-          const tablePropertyArray = groupByDropdowns[i].value.split('.')
-          const tableName = tablePropertyArray[0]
-          const fieldName = tablePropertyArray[1]
-          if (selectedTables[0].value === tableName) {
-            groupBy.push({
-              FieldName: fieldName
-            })
-          } else {
-            for (const table of tables) {
-              if (table.name === selectedTables[0].value) {
-                for (const property of table.properties) {
-                  if (property.type === 'foreignKey' && property.reference === tableName) {
+    let groupBy = [];
+    for (let i = 0; i < dropdowns.length; i++) {
+        if (selectedTables && selectedTables.length > 0) {
+            if (dropdowns[i].value !== null) {
+                const tablePropertyArray = dropdowns[i].value.split('.');
+                const tableName = tablePropertyArray[0];
+                const fieldName = tablePropertyArray[1];
+                if (selectedTables[0].value === tableName) {
                     groupBy.push({
-                      FieldName: property.name + '.' + fieldName
-                    })
-                  }
+                        FieldName: fieldName
+                    });
+                } else {
+                    for (const table of tables) {
+                        if (table.name === selectedTables[0].value) {
+                            for (const property of table.properties) {
+                                if (property.type === 'foreignKey' && property.reference === tableName) {
+                                    groupBy.push({
+                                        FieldName: property.name + '.' + fieldName
+                                    });
+                                }
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
         }
-      }
     }
-    newQuery['GroupBy'] = groupBy
+    newQuery['GroupBy'] = groupBy;
 
     if (oldQuery && oldQuery !== null && oldQuery['Aggregations']) {
-      newQuery['Aggregations'] = oldQuery['Aggregations']
+        newQuery['Aggregations'] = oldQuery['Aggregations'];
     } else {
-      newQuery['Aggregations'] = []
+        newQuery['Aggregations'] = [];
     }
     if (oldQuery && oldQuery !== null && oldQuery['Where']) {
-      newQuery['Where'] = oldQuery['Where']
+        newQuery['Where'] = oldQuery['Where'];
     } else {
-      newQuery['Where'] = []
+        newQuery['Where'] = [];
     }
-    setQuery(newQuery)
-  }
+    setQuery(newQuery);
+    setGroupByDropdowns([...dropdowns])
+  };
+
+  // const selectGroupBy = (data: any) => {
+  //   const lastElement = groupByDropdowns.length
+  //   const tablePropertyArray = data.split('.')
+  //   const tableName = tablePropertyArray[0]
+  //   const selectedProperty = tablePropertyArray[1]
+  //   groupByDropdowns[lastElement - 1].value = tableName + '.' + selectedProperty
+  //   const newDropdownElements = []
+  //   for (const element of selectedTableProperties) {
+  //     const dropdownProperties = []
+  //     if (element.label === tableName) {
+  //       for (const property of element.options) {
+  //         if (property.label !== selectedProperty) dropdownProperties.push({
+  //           label: property.label,
+  //           value: property.value
+  //         })
+  //       }
+  //     } else {
+  //       for (const property of element.options) {
+  //         dropdownProperties.push({
+  //           label: property.label,
+  //           value: property.value
+  //         })
+  //       }
+  //     }
+  //     if (dropdownProperties.length > 0) {
+  //       newDropdownElements.push({
+  //         label: element.label,
+  //         options: dropdownProperties
+  //       })
+  //     }
+  //   }
+  //   setGroupByDropdownItems(newDropdownElements)
+  //   const oldQuery = query
+  //   const newQuery: any = {}
+  //   if (oldQuery && oldQuery !== null && oldQuery['entitySlug']) {
+  //     newQuery['entitySlug'] = oldQuery['entitySlug']
+  //   } else {
+  //     newQuery['entitySlug'] = ''
+  //   }
+
+  //   let groupBy = []
+  //   for (let i = 0; i < groupByDropdowns.length; i++) {
+  //     if (selectedTables && selectedTables.length > 0) {
+  //       if (groupByDropdowns[i].value !== null) {
+  //         const tablePropertyArray = groupByDropdowns[i].value.split('.')
+  //         const tableName = tablePropertyArray[0]
+  //         const fieldName = tablePropertyArray[1]
+  //         if (selectedTables[0].value === tableName) {
+  //           groupBy.push({
+  //             FieldName: fieldName
+  //           })
+  //         } else {
+  //           for (const table of tables) {
+  //             if (table.name === selectedTables[0].value) {
+  //               for (const property of table.properties) {
+  //                 if (property.type === 'foreignKey' && property.reference === tableName) {
+  //                   groupBy.push({
+  //                     FieldName: property.name + '.' + fieldName
+  //                   })
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //   newQuery['GroupBy'] = groupBy
+
+  //   if (oldQuery && oldQuery !== null && oldQuery['Aggregations']) {
+  //     newQuery['Aggregations'] = oldQuery['Aggregations']
+  //   } else {
+  //     newQuery['Aggregations'] = []
+  //   }
+  //   if (oldQuery && oldQuery !== null && oldQuery['Where']) {
+  //     newQuery['Where'] = oldQuery['Where']
+  //   } else {
+  //     newQuery['Where'] = []
+  //   }
+  //   setQuery(newQuery)
+  // }
 
   const addNewGroupByDropdown = () => {
-    if (selectedTableProperties.length !== groupByDropdowns.length) {
-      const newTables = []
-      for (let table of groupByDropdowns) {
-        newTables.push(table)
-      }
-      newTables.push({ value: null })
-      setGroupByDropdowns(newTables)
-    }
+    const dropdowns = [...groupByDropdowns]
+    console.log(dropdowns)
+    dropdowns.push({ value: null })
+    setGroupByDropdowns([...dropdowns])
   }
 
-  const selectAggregationField = (data: any) => {
+  const selectAggregationField = (data: any, index: any) => {
     const elems = [...aggregationFieldDropdowns]
     const elementsNumber = elems.length
-    elems[elementsNumber - 1] = { value: data }
+    elems[index] = { value: data }
     let aggregations = []
-    // for (let i = 0; i < aggregateDropdowns.length; i++) {
-    //   if (elems[i].value !== null && aggregateDropdowns[i].value !== null) {
-    //     aggregations.push({
-    //       FieldName: elems[i].value,
-    //       AggregateFunction: aggregateDropdowns[i].value
-    //     })
-    //   }
-    // }
-    for (let i = 0; i < elems.length; i++) {
-      if (selectedTables && selectedTables.length > 0) {
-        if (elems[i].value !== null) {
-          const tablePropertyArray = elems[i].value.split('.')
-          const tableName = tablePropertyArray[0]
-          const fieldName = tablePropertyArray[1]
-          if (selectedTables[0].value === tableName) {
-            aggregations.push({
-              FieldName: fieldName,
-              AggregateFunction: aggregateDropdowns[i].value
-            })
-          } else {
-            for (const table of tables) {
-              if (table.name === selectedTables[0].value) {
-                for (const property of table.properties) {
-                  if (property.type === 'foreignKey' && property.reference === tableName) {
-                    aggregations.push({
-                      FieldName: property.name + '.' + fieldName,
-                      AggregateFunction: aggregateDropdowns[i].value
-                    })
+    if (elems.length === aggregateDropdowns.length) {
+      for (let i = 0; i < elems.length; i++) {
+        if (selectedTables && selectedTables.length > 0) {
+          if (elems[i].value !== null) {
+            const tablePropertyArray = elems[i].value.split('.')
+            const tableName = tablePropertyArray[0]
+            const fieldName = tablePropertyArray[1]
+            if (selectedTables[0].value === tableName) {
+              aggregations.push({
+                FieldName: fieldName,
+                AggregateFunction: aggregateDropdowns[i].value
+              })
+            } else {
+              for (const table of tables) {
+                if (table.name === selectedTables[0].value) {
+                  for (const property of table.properties) {
+                    if (property.type === 'foreignKey' && property.reference === tableName) {
+                      aggregations.push({
+                        FieldName: property.name + '.' + fieldName,
+                        AggregateFunction: aggregateDropdowns[i].value
+                      })
+                    }
                   }
                 }
               }
@@ -1615,7 +1665,8 @@ export default function Home(this: any) {
     } else {
       newQuery['entitySlug'] = ''
     }
-    newQuery['Aggregations'] = aggregations
+    if (aggregations.length > 0) newQuery['Aggregations'] = aggregations
+    else newQuery['Aggregations'] = oldQuery['Aggregations']
     if (oldQuery && oldQuery !== null && oldQuery['Where']) {
       newQuery['Where'] = oldQuery['Where']
     } else {
@@ -1626,30 +1677,50 @@ export default function Home(this: any) {
   }
 
   const addNewAggregationFieldDropdown = () => {
-    if (selectedTableProperties.length !== aggregationFieldDropdowns.length) {
-      const newTables = []
-      for (let table of aggregationFieldDropdowns) {
-        newTables.push(table)
-      }
-      newTables.push({ value: null })
-      setAggregationFieldDropdowns(newTables)
-    }
+    const aggregationFields = [...aggregationFieldDropdowns]
+    const newDropdown = { value: null }
+    aggregationFields.push(newDropdown)
+    setAggregationFieldDropdowns(aggregationFields)
   }
 
-  const selectAggregation = (data: any) => {
+  const selectAggregation = (data: any, index: any) => {
     const aggregationDropdownsCopy = [...aggregateDropdowns]
     const elementsNumber = aggregationDropdownsCopy.length
-    aggregationDropdownsCopy[elementsNumber - 1] = { value: data }
+    aggregationDropdownsCopy[index] = { value: data }
     setAggregateDropdowns([...aggregationDropdownsCopy])
     let aggregations = []
-    for (let i = 0; i < aggregateDropdowns.length; i++) {
-      if (aggregationFieldDropdowns[i].value !== null && aggregationDropdownsCopy[i].value !== null) {
-        aggregations.push({
-          FieldName: aggregationFieldDropdowns[i].value,
-          AggregateFunction: aggregationDropdownsCopy[i].value
-        })
+    const elems = [...aggregationFieldDropdowns]
+    if (elems.length === aggregationDropdownsCopy.length) {
+      for (let i = 0; i < elems.length; i++) {
+        if (selectedTables && selectedTables.length > 0) {
+          if (elems[i].value !== null) {
+            const tablePropertyArray = elems[i].value.split('.')
+            const tableName = tablePropertyArray[0]
+            const fieldName = tablePropertyArray[1]
+            if (selectedTables[0].value === tableName) {
+              aggregations.push({
+                FieldName: fieldName,
+                AggregateFunction: aggregationDropdownsCopy[i].value
+              })
+            } else {
+              for (const table of tables) {
+                if (table.name === selectedTables[0].value) {
+                  for (const property of table.properties) {
+                    if (property.type === 'foreignKey' && property.reference === tableName) {
+                      aggregations.push({
+                        FieldName: property.name + '.' + fieldName,
+                        AggregateFunction: aggregationDropdownsCopy[i].value
+                      })
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
+    
     const oldQuery = query
     const newQuery: any = {}
     if (oldQuery && oldQuery !== null && oldQuery['GroupBy']) {
@@ -1663,7 +1734,9 @@ export default function Home(this: any) {
     } else {
       newQuery['entitySlug'] = ''
     }
-    newQuery['Aggregations'] = aggregations
+
+    if (aggregations.length > 0) newQuery['Aggregations'] = aggregations
+    else newQuery['Aggregations'] = oldQuery['Aggregations']
 
     if (oldQuery && oldQuery !== null && oldQuery['Where']) {
       newQuery['Where'] = oldQuery['Where']
@@ -1675,14 +1748,10 @@ export default function Home(this: any) {
   }
 
   const addNewAggretionOperationsDropdown = () => {
-    if (aggregateDropdownItems.length !== aggregateDropdowns.length) {
-      const newTables = []
-      for (let table of aggregateDropdowns) {
-        newTables.push(table)
-      }
-      newTables.push({ value: null })
-      setAggregateDropdowns(newTables)
-    }
+    const dropdowns = [...aggregateDropdowns]
+    const newDropdown = { value: null }
+    dropdowns.push(newDropdown)
+    setAggregateDropdowns([...dropdowns])
   }
 
   const addNewAggregateDrodpdown = () => {
@@ -1747,10 +1816,10 @@ export default function Home(this: any) {
       {
         showAfterTableSelected &&
         groupByDropdowns.map((_table: any, index: number) => (
-          <div key={index}>
+          <div>
             <Typography.Title level={5}>Group By</Typography.Title>
             <Space.Compact>
-              <Select value={groupByDropdowns[index].value || "Select the property"} options={groupByDropdownItems} onSelect={selectGroupBy}/>
+              <Select value={groupByDropdowns[index].value || "Select the property"} options={groupByDropdownItems} onSelect={(e: any) => selectGroupBy(e, index)}/>
             </Space.Compact>
             <PlusCircleOutlined onClick={() => { addNewGroupByDropdown() }} />
           </div>
@@ -1759,14 +1828,14 @@ export default function Home(this: any) {
 
       {
         showAfterTableSelected &&
-        aggregationFieldDropdowns.map((_table: any, index: number) => (
-          <div key={index}>
+        aggregationFieldDropdowns.map((t: any, index: number) => (
+          <div>
             <Typography.Title level={5}>Aggregation</Typography.Title>
             <Space.Compact>
-              <Select value={aggregationFieldDropdowns[index].value || "Select the property"} options={aggregationFieldDropdownItems} onSelect={selectAggregationField} />
+              <Select value={aggregationFieldDropdowns[index].value || "Select the property"} options={aggregationFieldDropdownItems} onSelect={(e: any) => selectAggregationField(e, index)} />
             </Space.Compact>
             <Space.Compact>
-              <Select value={aggregateDropdowns[index].value || "Select the aggregation"} options={aggregateDropdownItems} onSelect={selectAggregation} />
+              <Select value={aggregateDropdowns[index].value || "Select the aggregation"} options={aggregateDropdownItems} onSelect={(e: any) => selectAggregation(e, index)} />
             </Space.Compact>
             <PlusCircleOutlined onClick={() => { addNewAggregateDrodpdown(); }} />
           </div>
