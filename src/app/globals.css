@@ -37,6 +37,23 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+.component {
+  height: 250px;
+  background-color: red;
+}
+
+.placeholder {
+  background-color: blue;
+  height:50px;
+  width: 150px;
+}
+
+.draggable {
+  background-color: purple;
+  height: 50px;
+  width:50px;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

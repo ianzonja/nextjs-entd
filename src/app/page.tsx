@@ -2,11 +2,12 @@
 import AppNavigation from "@/components/app-navigation";
 import { ColumnDirective, ColumnsDirective, QueryBuilderComponent } from "@syncfusion/ej2-react-querybuilder";
 import { DropDownTree, DropDownTreeComponent, DropDownTreeModel, FieldsModel } from '@syncfusion/ej2-react-dropdowns';
-import { DrawerProps, RadioChangeEvent, Space, Radio, Button, Drawer, Collapse, MenuProps, Dropdown, Typography, Input, Select } from "antd";
+import { DrawerProps, RadioChangeEvent, Space, Radio, Button, Drawer, Collapse, MenuProps, Dropdown, Typography, Input, Select, TreeSelect } from "antd";
 import { PlusOutlined, DashboardOutlined, FastBackwardOutlined, DownOutlined, StepBackwardOutlined, StepForwardOutlined, FastForwardOutlined, PlusCircleOutlined, LinkOutlined, BankOutlined, EditOutlined, DeleteOutlined, UserOutlined, CalendarOutlined, AppstoreOutlined, MessageOutlined, SettingOutlined, InboxOutlined } from '@ant-design/icons';
 import { registerLicense } from '@syncfusion/ej2-base';
 import { useCallback, useEffect, useState } from "react";
 import Tabview from "@/components/tabview";
+import PlaceholderTest from "@/components/placeholder-test";
 
 registerLicense(
   "Ngo9BigBOggjHTQxAR8/V1NAaF1cXmhLYVJyWmFZfVpgdV9EYVZRTGY/P1ZhSXxXdkdjXn5dcnVVTmZVU00="
@@ -994,8 +995,14 @@ export default function Home(this: any) {
   const [selectedTables, setSelectedTables] = useState<any[]>([])
   const [tableDropdownItems, setTableDropdownItems] = useState<any[]>([])
   const [selectedTableProperties, setSelectedTableProperties] = useState<any[]>([])
-  const [selectedGroupBy, setSelectedGroupBy] = useState<[] | null>(null)
-  const [groupByDropdowns, setGroupByDropdowns] = useState<any[]>([])
+  const [showAddGroupBy, setShowAddGroupBy] = useState<boolean>(false)
+  const [showAddAggregation, setShowAddAggregation] = useState<boolean>(false)
+  const [currentlySelectedGroupBy, setCurrentlySelectedGroupBy] = useState<string>()
+  const [currentlySelectedGroupByLabel, setCurrentlySelectedGroupByLabel] = useState<string | null>(null)
+  const [currentlySelectedAggregationField, setCurrentlySelectedAggregationField] = useState<string>()
+  const [currentlySelectedAggreggationFieldLabel, setCurrentlySelectedAggregationFieldLabel] = useState<string | null>(null)
+  const [selectedGroupBy, setSelectedGroupBy] = useState<any[]>([])
+  const [selectedAggregations, setSelectedAggregations] = useState<any[]>([])
   const [groupByDropdownItems, setGroupByDropdownItems] = useState<any[]>([])
   const [aggregationFieldDropdowns, setAggregationFieldDropdowns] = useState<any[]>([])
   const [aggregationFieldDropdownItems, setAggregationFieldDropdownItems] = useState<any[]>()
@@ -1101,7 +1108,8 @@ export default function Home(this: any) {
         nodeChild.push({
           nodeId: table.name + '.' + property.name,
           nodeText: property.name,
-          type: property.type
+          type: property.type,
+          componentText: property.name
         })
       }
       queryBuilderColumns.push({
@@ -1127,15 +1135,97 @@ export default function Home(this: any) {
       setTableDropdownDefaultValue(inputData.table)
       const element = tablesData.find((element: any) => element.name === inputData.table)
       const dropdownElements = []
+      const treeData = []
       for (const table of tablesData) {
         const options = []
+        const parentData: {
+          value: string;
+          title: string;
+          selectable: boolean;
+          children: any[]
+        } = {
+          value: table.name,
+          title: table.name,
+          selectable: false,
+          children: []
+        }
         if (table.name === element!.name) {
           for (const field of table.properties) {
             options.push({
               value: field.name,
               label: field.name
             })
+            if (field.type === 'number') {
+              parentData.children.push({
+                value: table.name+'.'+field.name,
+                title: field.name,
+                selectable: false,
+                children: [
+                  {
+                    value: table.name+'.'+field.name+'.'+'count',
+                    title: 'Count'
+                  },
+                  {
+                    value: table.name+'.'+field.name+'.'+'sum',
+                    title: 'Sum'
+                  },
+                  {
+                    value: table.name+'.'+field.name+'.'+'average',
+                    title: 'Average'
+                  },
+                  {
+                    value: table.name+'.'+field.name+'.'+'min',
+                    title: 'Min'
+                  },
+                  {
+                    value: table.name+'.'+field.name+'.'+'max',
+                    title: 'Max'
+                  }
+                ]
+              })
+            } else if (field.type === 'date') {
+              parentData.children.push({
+                value: table.name+'.'+field.name,
+                title: field.name,
+                selectable: false,
+                children: [
+                  {
+                    value: table.name+'.'+field.name+'.'+'count',
+                    title: 'Count'
+                  },
+                  {
+                    value: table.name+'.'+field.name+'.'+'sum',
+                    title: 'Sum'
+                  },
+                  {
+                    value: table.name+'.'+field.name+'.'+'min',
+                    title: 'Min'
+                  },
+                  {
+                    value: table.name+'.'+field.name+'.'+'max',
+                    title: 'Max'
+                  }
+                ]
+              })
+            } else {
+              parentData.children.push({
+                value: table.name+'.'+field.name,
+                title: field.name,
+                selectable: false,
+                children: [
+                  {
+                    value: table.name+'.'+field.name+'.'+'count',
+                    title: 'Count'
+                  },
+                  {
+                    value: table.name+'.'+field.name+'.'+'sum',
+                    title: 'Sum'
+                  }
+                ]
+              })
+            }
           }
+          treeData.push(parentData)
           const option = {
             label: table.name,
             options: options
@@ -1149,7 +1239,77 @@ export default function Home(this: any) {
                 value: field.name,
                 label: field.name
               })
+              if (field.type === 'number') {
+                parentData.children.push({
+                  value: table.name+'.'+field.name,
+                  title: field.name,
+                  selectable: false,
+                  children: [
+                    {
+                      value: table.name+'.'+field.name+'.'+'count',
+                      title: 'Count'
+                    },
+                    {
+                      value: table.name+'.'+field.name+'.'+'sum',
+                      title: 'Sum'
+                    },
+                    {
+                      value: table.name+'.'+field.name+'.'+'average',
+                      title: 'Average'
+                    },
+                    {
+                      value: table.name+'.'+field.name+'.'+'min',
+                      title: 'Min'
+                    },
+                    {
+                      value: table.name+'.'+field.name+'.'+'max',
+                      title: 'Max'
+                    }
+                  ]
+                })
+              } else if (field.type === 'date') {
+                parentData.children.push({
+                  value: table.name+'.'+field.name,
+                  title: field.name,
+                  selectable: false,
+                  children: [
+                    {
+                      value: table.name+'.'+field.name+'.'+'count',
+                      title: 'Count'
+                    },
+                    {
+                      value: table.name+'.'+field.name+'.'+'sum',
+                      title: 'Sum'
+                    },
+                    {
+                      value: table.name+'.'+field.name+'.'+'min',
+                      title: 'Min'
+                    },
+                    {
+                      value: table.name+'.'+field.name+'.'+'max',
+                      title: 'Max'
+                    }
+                  ]
+                })
+              } else {
+                parentData.children.push({
+                  value: table.name+'.'+field.name,
+                  title: field.name,
+                  selectable: false,
+                  children: [
+                    {
+                      value: table.name+'.'+field.name+'.'+'count',
+                      title: 'Count'
+                    },
+                    {
+                      value: table.name+'.'+field.name+'.'+'sum',
+                      title: 'Sum'
+                    }
+                  ]
+                })
+              }
             }
+            treeData.push(parentData)
             const option = {
               label: table.name,
               options: options
@@ -1160,7 +1320,7 @@ export default function Home(this: any) {
       }
       setSelectedTableProperties(dropdownElements)
       setGroupByDropdownItems(dropdownElements)
-      setAggregationFieldDropdownItems(dropdownElements)
+      setAggregationFieldDropdownItems(treeData)
       setShowAfterTableSelected(true)
     }
     else setSelectedTables([...array])
@@ -1173,9 +1333,7 @@ export default function Home(this: any) {
       // for (const gb of inputData.groupBy) {
       //   selectedGroupByValues.push({ value: gb.FieldName })
       // }
-      setGroupByDropdowns(selectedGroupByValues)
-    } else {
-      setGroupByDropdowns([...array])
+      setSelectedGroupBy(selectedGroupByValues)
     }
     if (inputData && inputData.aggregations && inputData.aggregations.length > 0) {
       const aggregationFields: any[] = []
@@ -1224,6 +1382,7 @@ export default function Home(this: any) {
   }
 
   const revertRule = (json: any) => {
+    console.log(json)
     if (!json) return null
     if (!json.rules) {
       let field = ''
@@ -1348,6 +1507,18 @@ export default function Home(this: any) {
     const selectedTableOptions = []
     let nodeChild = []
     const queryBuilderColumns = []
+    const treeData = []
+    const parentData: {
+      value: string;
+      title: string;
+      selectable: boolean;
+      children: any[]
+    } = {
+      value: element.name,
+      title: element.name,
+      selectable: false,
+      children: []
+    }
     for (const option of element.properties) {
       selectedTableOptions.push({
         label: option.name,
@@ -1356,8 +1527,78 @@ export default function Home(this: any) {
       nodeChild.push({
         nodeId: element.name + '.' + option.name,
         nodeText: option.name,
-        type: option.type
+        type: option.type,
+        componentText: option.name
       })
+      if (option.type === 'number') {
+        parentData.children.push({
+          value: element.name+'.'+option.name,
+          title: option.name,
+          selectable: false,
+          children: [
+            {
+              value: element.name+'.'+option.name+'.'+'count',
+              title: 'Count'
+            },
+            {
+              value: element.name+'.'+option.name+'.'+'sum',
+              title: 'Sum'
+            },
+            {
+              value: element.name+'.'+option.name+'.'+'average',
+              title: 'Average'
+            },
+            {
+              value: element.name+'.'+option.name+'.'+'min',
+              title: 'Min'
+            },
+            {
+              value: element.name+'.'+option.name+'.'+'max',
+              title: 'Max'
+            }
+          ]
+        })
+      } else if (option.type === 'date') {
+        parentData.children.push({
+          value: element.name+'.'+option.name,
+          title: option.name,
+          selectable: false,
+          children: [
+            {
+              value: element.name+'.'+option.name+'.'+'count',
+              title: 'Count'
+            },
+            {
+              value: element.name+'.'+option.name+'.'+'sum',
+              title: 'Sum'
+            },
+            {
+              value: element.name+'.'+option.name+'.'+'min',
+              title: 'Min'
+            },
+            {
+              value: element.name+'.'+option.name+'.'+'max',
+              title: 'Max'
+            }
+          ]
+        })
+      } else {
+        parentData.children.push({
+          value: element.name+'.'+option.name,
+          title: option.name,
+          selectable: false,
+          children: [
+            {
+              value: element.name+'.'+option.name+'.'+'count',
+              title: 'Count'
+            },
+            {
+              value: element.name+'.'+option.name+'.'+'sum',
+              title: 'Sum'
+            }
+          ]
+        })
+      }
     }
     const dropdownElements = [{
       label: selectedTableLabel,
@@ -1370,22 +1611,109 @@ export default function Home(this: any) {
       selectable: false,
       nodeChild: nodeChild
     })
+    treeData.push(parentData)
     nodeChild = []
     for (const reference of element.references) {
+      let lookupName = ''
       for (const table of tables) {
+        const parentData: {
+          value: string;
+          title: string;
+          selectable: boolean;
+          children: any[]
+        } = {
+          value: table.name,
+          title: table.name,
+          selectable: false,
+          children: []
+        }
         if (reference.name === table.name) {
+          for (const property of element.properties) {
+            if (property.type === 'foreignKey' && property.reference && property.reference === table.name) lookupName = property.name
+          }
+          console.log('LOOKUP NAME: ', lookupName)
           const dropdownCategoryName = table.name
           const dropdownCategoryOptions = []
           for (const option of table.properties) {
             dropdownCategoryOptions.push({
               label: option.name,
-              value: table.name + '.' + option.name,
+              value: table.name + '.' + lookupName + '.' + option.name,
             })
             nodeChild.push({
               nodeId: table.name + '.' + option.name,
-              nodeText: option.name,
-              type: option.type
+              nodeText: table.name + '.' + option.name,
+              type: option.type,
+              componentText: lookupName + '.' + option.name
             })
+            if (option.type === 'number') {
+              parentData.children.push({
+                value: table.name + '.' +option.name,
+                title: option.name,
+                selectable: false,
+                children: [
+                  {
+                    value: table.name + '.' + lookupName + '.' +option.name+'.'+'count',
+                    title: 'Count'
+                  },
+                  {
+                    value: table.name + '.' + lookupName + '.' +option.name+'.'+'sum',
+                    title: 'Sum'
+                  },
+                  {
+                    value: table.name + '.' + lookupName + '.' +option.name+'.'+'average',
+                    title: 'Average'
+                  },
+                  {
+                    value: table.name + '.' + lookupName + '.' +option.name+'.'+'min',
+                    title: 'Min'
+                  },
+                  {
+                    value: table.name + '.' + lookupName + '.' +option.name+'.'+'max',
+                    title: 'Max'
+                  }
+                ]
+              })
+            } else if (option.type === 'date') {
+              parentData.children.push({
+                value: table.name + '.' +option.name,
+                title: option.name,
+                selectable: false,
+                children: [
+                  {
+                    value: table.name + '.' + lookupName + '.' +option.name+'.'+'count',
+                    title: 'Count'
+                  },
+                  {
+                    value: table.name + '.' + lookupName + '.' +option.name+'.'+'sum',
+                    title: 'Sum'
+                  },
+                  {
+                    value: table.name + '.' + lookupName + '.' +option.name+'.'+'min',
+                    title: 'Min'
+                  },
+                  {
+                    value: table.name + '.' + lookupName + '.' +option.name+'.'+'max',
+                    title: 'Max'
+                  }
+                ]
+              })
+            } else {
+              parentData.children.push({
+                value: table.name + '.' +option.name,
+                title: option.name,
+                selectable: false,
+                children: [
+                  {
+                    value: table.name + '.' + lookupName + '.' +option.name+ '.' +'count',
+                    title: 'Count'
+                  },
+                  {
+                    value: table.name + '.' + lookupName + '.' +option.name+ '.' +'sum',
+                    title: 'Sum'
+                  }
+                ]
+              })
+            }
           }
           if (dropdownCategoryOptions.length > 0) {
             dropdownElements.push({
@@ -1399,6 +1727,7 @@ export default function Home(this: any) {
               selectable: false,
               nodeChild: nodeChild
             })
+            treeData.push(parentData)
           }
         }
       }
@@ -1408,10 +1737,9 @@ export default function Home(this: any) {
       fields: fields
     }
     setGroupByDropdownItems(dropdownElements)
-    setAggregationFieldDropdownItems(dropdownElements)
+    setAggregationFieldDropdownItems(treeData)
     setSelectedTableProperties(dropdownElements)
     const array = [{ value: null }]
-    setGroupByDropdowns([...array])
     setAggregationFieldDropdowns([...array])
     setAggregateDropdowns([...array])
     setQueryBuilderRule({})
@@ -1442,321 +1770,221 @@ export default function Home(this: any) {
     setQuery(newQuery)
   }
 
-  const selectGroupBy = (data: any, index: any) => {
-    console.log(data)
-    console.log(index)
-    const dropdowns = [...groupByDropdowns]
-    const lastElement = dropdowns.length;
+  const showAddGroupByContainer = () => {
+    setShowAddGroupBy(true)
+  }
+
+  const showAddAggregationContainer = () => {
+    setShowAddAggregation(true)
+  }
+
+  const saveCurrentlySelectedGroupBy = (data: string) => {
     const tablePropertyArray = data.split('.');
-    const tableName = tablePropertyArray[0];
-    const selectedProperty = tablePropertyArray[1];
-    dropdowns[index] = { value: data };
-    const newDropdownElements = [];
-    for (const element of selectedTableProperties) {
-        const dropdownProperties = [];
-        if (element.label === tableName) {
-            for (const property of element.options) {
-                if (property.label !== selectedProperty) dropdownProperties.push({
-                    label: property.label,
-                    value: property.value
-                });
-            }
-        } else {
-            for (const property of element.options) {
-                dropdownProperties.push({
-                    label: property.label,
-                    value: property.value
-                });
-            }
-        }
-        if (dropdownProperties.length > 0) {
-            newDropdownElements.push({
-                label: element.label,
-                options: dropdownProperties
-            });
-        }
+    let tableName = ''
+    let selectedProperty = ''
+    let lookupName = ''
+    if (tablePropertyArray.length === 2) {
+      tableName = tablePropertyArray[0];
+      selectedProperty = tablePropertyArray[1];
+      setCurrentlySelectedGroupByLabel(selectedProperty)
     }
-    setGroupByDropdownItems(newDropdownElements);
-    const oldQuery = query;
-    const newQuery: any = {};
-    if (oldQuery && oldQuery !== null && oldQuery['entitySlug']) {
-        newQuery['entitySlug'] = oldQuery['entitySlug'];
-    } else {
-        newQuery['entitySlug'] = '';
+    if (tablePropertyArray.length === 3) {
+      tableName = tablePropertyArray[0];
+      lookupName = tablePropertyArray[1]
+      selectedProperty = tablePropertyArray[2];
+      const label = lookupName + '.' + selectedProperty
+      setCurrentlySelectedGroupByLabel(label)
     }
+    setCurrentlySelectedGroupBy(data)
+  }
 
-    let groupBy = [];
-    for (let i = 0; i < dropdowns.length; i++) {
-        if (selectedTables && selectedTables.length > 0) {
-            if (dropdowns[i].value !== null) {
-                const tablePropertyArray = dropdowns[i].value.split('.');
-                const tableName = tablePropertyArray[0];
-                const fieldName = tablePropertyArray[1];
-                if (selectedTables[0].value === tableName) {
-                    groupBy.push({
-                        FieldName: fieldName
-                    });
-                } else {
-                    for (const table of tables) {
-                        if (table.name === selectedTables[0].value) {
-                            for (const property of table.properties) {
-                                if (property.type === 'foreignKey' && property.reference === tableName) {
-                                    groupBy.push({
-                                        FieldName: property.name + '.' + fieldName
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    newQuery['GroupBy'] = groupBy;
+  const selectGroupBy = () => {
+    console.log('group by to add:')
+    console.log(currentlySelectedGroupBy)
+    if (currentlySelectedGroupBy && currentlySelectedGroupBy !== '') {
+      const selectedGroupByData = [...selectedGroupBy]
+      const tablePropertyArray = currentlySelectedGroupBy.split('.');
+      let tableName = ''
+      let selectedProperty = ''
+      let lookupName = ''
+      if (tablePropertyArray.length === 2) {
+        tableName = tablePropertyArray[0];
+        selectedProperty = tablePropertyArray[1];
+      }
+      if (tablePropertyArray.length === 3) {
+        tableName = tablePropertyArray[0];
+        lookupName = tablePropertyArray[1]
+        selectedProperty = tablePropertyArray[2];
+      }
+      const selectedTable = selectedTables[0]
+      let newElement = ''
+      if (selectedTable && selectedTable.value && selectedTable.value === tableName) {
+        newElement = selectedProperty
+      } else newElement = lookupName + '.' + selectedProperty
+      console.log('setting: ', selectedGroupByData)
+      selectedGroupByData.push(newElement)
+      setSelectedGroupBy([...selectedGroupByData])
+      setCurrentlySelectedGroupBy('')
+      setShowAddGroupBy(false)
 
-    if (oldQuery && oldQuery !== null && oldQuery['Aggregations']) {
-        newQuery['Aggregations'] = oldQuery['Aggregations'];
-    } else {
-        newQuery['Aggregations'] = [];
+      const newDropdownElements = [];
+      for (const element of selectedTableProperties) {
+          const dropdownProperties = [];
+          if (element.label === tableName) {
+              for (const property of element.options) {
+                  if (property.label !== selectedProperty) dropdownProperties.push({
+                      label: property.label,
+                      value: property.value
+                  });
+              }
+          } else {
+              for (const property of element.options) {
+                  dropdownProperties.push({
+                      label: property.label,
+                      value: property.value
+                  });
+              }
+          }
+          if (dropdownProperties.length > 0) {
+              newDropdownElements.push({
+                  label: element.label,
+                  options: dropdownProperties
+              });
+          }
+      }
+      setGroupByDropdownItems(newDropdownElements);
+
+
+      const oldQuery = query;
+      const newQuery: any = {};
+      if (oldQuery && oldQuery !== null && oldQuery['entitySlug']) {
+          newQuery['entitySlug'] = oldQuery['entitySlug'];
+      } else {
+          newQuery['entitySlug'] = '';
+      }
+
+      if (oldQuery && oldQuery !== null && oldQuery['GroupBy']) {
+        newQuery['GroupBy'] = oldQuery['GroupBy'];
+      } else {
+          newQuery['GroupBy'] = [];
+      }
+      newQuery['GroupBy'].push({
+        FieldName: newElement
+      })
+
+      if (oldQuery && oldQuery !== null && oldQuery['Aggregations']) {
+          newQuery['Aggregations'] = oldQuery['Aggregations'];
+      } else {
+          newQuery['Aggregations'] = [];
+      }
+      if (oldQuery && oldQuery !== null && oldQuery['Where']) {
+          newQuery['Where'] = oldQuery['Where'];
+      } else {
+          newQuery['Where'] = [];
+      }
+      setQuery(newQuery);
+      setCurrentlySelectedGroupByLabel(null)
     }
-    if (oldQuery && oldQuery !== null && oldQuery['Where']) {
-        newQuery['Where'] = oldQuery['Where'];
-    } else {
-        newQuery['Where'] = [];
-    }
-    setQuery(newQuery);
-    setGroupByDropdowns([...dropdowns])
   };
-
-  // const selectGroupBy = (data: any) => {
-  //   const lastElement = groupByDropdowns.length
-  //   const tablePropertyArray = data.split('.')
-  //   const tableName = tablePropertyArray[0]
-  //   const selectedProperty = tablePropertyArray[1]
-  //   groupByDropdowns[lastElement - 1].value = tableName + '.' + selectedProperty
-  //   const newDropdownElements = []
-  //   for (const element of selectedTableProperties) {
-  //     const dropdownProperties = []
-  //     if (element.label === tableName) {
-  //       for (const property of element.options) {
-  //         if (property.label !== selectedProperty) dropdownProperties.push({
-  //           label: property.label,
-  //           value: property.value
-  //         })
-  //       }
-  //     } else {
-  //       for (const property of element.options) {
-  //         dropdownProperties.push({
-  //           label: property.label,
-  //           value: property.value
-  //         })
-  //       }
-  //     }
-  //     if (dropdownProperties.length > 0) {
-  //       newDropdownElements.push({
-  //         label: element.label,
-  //         options: dropdownProperties
-  //       })
-  //     }
-  //   }
-  //   setGroupByDropdownItems(newDropdownElements)
-  //   const oldQuery = query
-  //   const newQuery: any = {}
-  //   if (oldQuery && oldQuery !== null && oldQuery['entitySlug']) {
-  //     newQuery['entitySlug'] = oldQuery['entitySlug']
-  //   } else {
-  //     newQuery['entitySlug'] = ''
-  //   }
-
-  //   let groupBy = []
-  //   for (let i = 0; i < groupByDropdowns.length; i++) {
-  //     if (selectedTables && selectedTables.length > 0) {
-  //       if (groupByDropdowns[i].value !== null) {
-  //         const tablePropertyArray = groupByDropdowns[i].value.split('.')
-  //         const tableName = tablePropertyArray[0]
-  //         const fieldName = tablePropertyArray[1]
-  //         if (selectedTables[0].value === tableName) {
-  //           groupBy.push({
-  //             FieldName: fieldName
-  //           })
-  //         } else {
-  //           for (const table of tables) {
-  //             if (table.name === selectedTables[0].value) {
-  //               for (const property of table.properties) {
-  //                 if (property.type === 'foreignKey' && property.reference === tableName) {
-  //                   groupBy.push({
-  //                     FieldName: property.name + '.' + fieldName
-  //                   })
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   newQuery['GroupBy'] = groupBy
-
-  //   if (oldQuery && oldQuery !== null && oldQuery['Aggregations']) {
-  //     newQuery['Aggregations'] = oldQuery['Aggregations']
-  //   } else {
-  //     newQuery['Aggregations'] = []
-  //   }
-  //   if (oldQuery && oldQuery !== null && oldQuery['Where']) {
-  //     newQuery['Where'] = oldQuery['Where']
-  //   } else {
-  //     newQuery['Where'] = []
-  //   }
-  //   setQuery(newQuery)
-  // }
-
-  const addNewGroupByDropdown = () => {
-    const dropdowns = [...groupByDropdowns]
-    console.log(dropdowns)
-    dropdowns.push({ value: null })
-    setGroupByDropdowns([...dropdowns])
-  }
-
-  const selectAggregationField = (data: any, index: any) => {
-    const elems = [...aggregationFieldDropdowns]
-    const elementsNumber = elems.length
-    elems[index] = { value: data }
-    let aggregations = []
-    if (elems.length === aggregateDropdowns.length) {
-      for (let i = 0; i < elems.length; i++) {
-        if (selectedTables && selectedTables.length > 0) {
-          if (elems[i].value !== null) {
-            const tablePropertyArray = elems[i].value.split('.')
-            const tableName = tablePropertyArray[0]
-            const fieldName = tablePropertyArray[1]
-            if (selectedTables[0].value === tableName) {
-              aggregations.push({
-                FieldName: fieldName,
-                AggregateFunction: aggregateDropdowns[i].value
-              })
-            } else {
-              for (const table of tables) {
-                if (table.name === selectedTables[0].value) {
-                  for (const property of table.properties) {
-                    if (property.type === 'foreignKey' && property.reference === tableName) {
-                      aggregations.push({
-                        FieldName: property.name + '.' + fieldName,
-                        AggregateFunction: aggregateDropdowns[i].value
-                      })
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+  
+  const selectAggregationField = (data: any) => {
+    console.log('selected agg:')
+    console.log(data)
+    if (data) {
+      const array = data.split('.')
+      let tableName = ''
+      let field = ''
+      let aggregation = ''
+      let lookupName = ''
+      if (array.length === 3) {
+        tableName = array[0]
+        field = array[1]
+        aggregation = array[2]
+        setCurrentlySelectedAggregationFieldLabel(field + ' - ' + aggregation)
       }
-    }
-    const oldQuery = query
-    const newQuery: any = {}
-    if (oldQuery && oldQuery !== null && oldQuery['GroupBy']) {
-      newQuery['GroupBy'] = oldQuery['GroupBy']
-    } else {
-      newQuery['GroupBy'] = []
-    }
-
-    if (oldQuery && oldQuery !== null && oldQuery['entitySlug']) {
-      newQuery['entitySlug'] = oldQuery['entitySlug']
-    } else {
-      newQuery['entitySlug'] = ''
-    }
-    if (aggregations.length > 0) newQuery['Aggregations'] = aggregations
-    else newQuery['Aggregations'] = oldQuery['Aggregations']
-    if (oldQuery && oldQuery !== null && oldQuery['Where']) {
-      newQuery['Where'] = oldQuery['Where']
-    } else {
-      newQuery['Where'] = []
-    }
-    setQuery(newQuery)
-    setAggregationFieldDropdowns([...elems])
-  }
-
-  const addNewAggregationFieldDropdown = () => {
-    const aggregationFields = [...aggregationFieldDropdowns]
-    const newDropdown = { value: null }
-    aggregationFields.push(newDropdown)
-    setAggregationFieldDropdowns(aggregationFields)
-  }
-
-  const selectAggregation = (data: any, index: any) => {
-    const aggregationDropdownsCopy = [...aggregateDropdowns]
-    const elementsNumber = aggregationDropdownsCopy.length
-    aggregationDropdownsCopy[index] = { value: data }
-    setAggregateDropdowns([...aggregationDropdownsCopy])
-    let aggregations = []
-    const elems = [...aggregationFieldDropdowns]
-    if (elems.length === aggregationDropdownsCopy.length) {
-      for (let i = 0; i < elems.length; i++) {
-        if (selectedTables && selectedTables.length > 0) {
-          if (elems[i].value !== null) {
-            const tablePropertyArray = elems[i].value.split('.')
-            const tableName = tablePropertyArray[0]
-            const fieldName = tablePropertyArray[1]
-            if (selectedTables[0].value === tableName) {
-              aggregations.push({
-                FieldName: fieldName,
-                AggregateFunction: aggregationDropdownsCopy[i].value
-              })
-            } else {
-              for (const table of tables) {
-                if (table.name === selectedTables[0].value) {
-                  for (const property of table.properties) {
-                    if (property.type === 'foreignKey' && property.reference === tableName) {
-                      aggregations.push({
-                        FieldName: property.name + '.' + fieldName,
-                        AggregateFunction: aggregationDropdownsCopy[i].value
-                      })
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+      if (array.length === 4) {
+        tableName = array[0]
+        lookupName = array[1]
+        field = array[2]
+        aggregation = array[3]
+        setCurrentlySelectedAggregationFieldLabel(lookupName + '.' + field + ' - ' + aggregation)
       }
+      setCurrentlySelectedAggregationField(data)
     }
-    
-    const oldQuery = query
-    const newQuery: any = {}
-    if (oldQuery && oldQuery !== null && oldQuery['GroupBy']) {
-      newQuery['GroupBy'] = oldQuery['GroupBy']
-    } else {
-      newQuery['GroupBy'] = []
-    }
-
-    if (oldQuery && oldQuery !== null && oldQuery['entitySlug']) {
-      newQuery['entitySlug'] = oldQuery['entitySlug']
-    } else {
-      newQuery['entitySlug'] = ''
-    }
-
-    if (aggregations.length > 0) newQuery['Aggregations'] = aggregations
-    else newQuery['Aggregations'] = oldQuery['Aggregations']
-
-    if (oldQuery && oldQuery !== null && oldQuery['Where']) {
-      newQuery['Where'] = oldQuery['Where']
-    } else {
-      newQuery['Where'] = []
-    }
-    setQuery(newQuery)
-
   }
 
-  const addNewAggretionOperationsDropdown = () => {
-    const dropdowns = [...aggregateDropdowns]
-    const newDropdown = { value: null }
-    dropdowns.push(newDropdown)
-    setAggregateDropdowns([...dropdowns])
-  }
+  const SelectAggregation = () => {
+    const selectedAggregation = currentlySelectedAggregationField
+    if (selectedAggregation && selectedAggregation !== '') {
+      const selectedAggregationsArray = [...selectedAggregations]
+      const array = selectedAggregation.split('.')
+      let tableName = ''
+      let field = ''
+      let aggregation = ''
+      let lookupName = ''
+      if (array.length === 3) {
+        tableName = array[0]
+        field = array[1]
+        aggregation = array[2]
+        selectedAggregationsArray.push({
+          table: tableName,
+          field: field,
+          method: aggregation
+        })
+      }
+      if (array.length === 4) {
+        tableName = array[0]
+        lookupName = array[1]
+        field = array[2]
+        aggregation = array[3]
+        selectedAggregationsArray.push({
+          table: tableName,
+          field: lookupName + '.' + field,
+          method: aggregation
+        })
+      }
 
-  const addNewAggregateDrodpdown = () => {
-    addNewAggregationFieldDropdown()
-    addNewAggretionOperationsDropdown()
+      const oldQuery = query
+      const newQuery: any = {}
+      if (oldQuery && oldQuery !== null && oldQuery['GroupBy']) {
+        newQuery['GroupBy'] = oldQuery['GroupBy']
+      } else {
+        newQuery['GroupBy'] = []
+      }
+
+      if (oldQuery && oldQuery !== null && oldQuery['entitySlug']) {
+        newQuery['entitySlug'] = oldQuery['entitySlug']
+      } else {
+        newQuery['entitySlug'] = ''
+      }
+
+      if (oldQuery && oldQuery !== null && oldQuery['Aggregations']) {
+        newQuery['Aggregations'] = oldQuery['Aggregations']
+        if (lookupName !== '') {
+          newQuery['Aggregations'].push({
+            FieldName: lookupName + '.' + field,
+            AggregateFunction: aggregation
+          })
+        } else {
+          newQuery['Aggregations'].push({
+            FieldName: field,
+            AggregateFunction: aggregation
+          })
+        }
+      } else {
+        newQuery['Aggregations'] = []
+      }
+
+      if (oldQuery && oldQuery !== null && oldQuery['Where']) {
+        newQuery['Where'] = oldQuery['Where']
+      } else {
+        newQuery['Where'] = []
+      }
+      setQuery(newQuery)
+      setSelectedAggregations([...selectedAggregationsArray])
+      setCurrentlySelectedAggregationFieldLabel(null)
+      setShowAddAggregation(false)
+    }
   }
 
   return (
@@ -1805,7 +2033,7 @@ export default function Home(this: any) {
             <ColumnsDirective>
               {queryBuilderColumnsData.map((element, index) => (
                 element.nodeChild.map((child: any, childIndex: any) => (
-                    <ColumnDirective field={child.nodeId} label={element.nodeText+'.'+child.nodeText} type={child.type}/>
+                    <ColumnDirective field={child.nodeId} label={child.componentText} type={child.type}/>
                 ))
               ))}
             </ColumnsDirective>
@@ -1815,36 +2043,96 @@ export default function Home(this: any) {
 
       {
         showAfterTableSelected &&
-        groupByDropdowns.map((_table: any, index: number) => (
-          <div>
+        <div className="flex flex-wrap">
+          <div className="w-full">
             <Typography.Title level={5}>Group By</Typography.Title>
-            <Space.Compact>
-              <Select value={groupByDropdowns[index].value || "Select the property"} options={groupByDropdownItems} onSelect={(e: any) => selectGroupBy(e, index)}/>
-            </Space.Compact>
-            <PlusCircleOutlined onClick={() => { addNewGroupByDropdown() }} />
           </div>
-        ))
+          {
+            showAddGroupBy ? (
+              <div>
+                <Space.Compact>
+                  <Select value={currentlySelectedGroupByLabel || "Select the property"} options={groupByDropdownItems} onSelect={(e: any) => saveCurrentlySelectedGroupBy(e)}/>
+                </Space.Compact>
+                <Button onClick={(e) => selectGroupBy()}>Submit</Button>
+              </div>
+            ) : (
+              
+              <Button icon={<PlusOutlined />} onClick={(e) => showAddGroupByContainer()}> Add Group By</Button>
+            )
+          }
+        </div>
+      }
+
+      {
+        showAfterTableSelected && 
+        <div>
+          {
+            selectedGroupBy.length > 0 && (
+              <div>
+                {selectedGroupBy.map((value, index) => (
+                  <div key={index}>{value}</div>
+                ))}
+              </div>
+            )
+          }
+        </div>
       }
 
       {
         showAfterTableSelected &&
-        aggregationFieldDropdowns.map((t: any, index: number) => (
-          <div>
+        <div className="flex flex-wrap">
+          <div className="w-full">
             <Typography.Title level={5}>Aggregation</Typography.Title>
-            <Space.Compact>
-              <Select value={aggregationFieldDropdowns[index].value || "Select the property"} options={aggregationFieldDropdownItems} onSelect={(e: any) => selectAggregationField(e, index)} />
-            </Space.Compact>
-            <Space.Compact>
-              <Select value={aggregateDropdowns[index].value || "Select the aggregation"} options={aggregateDropdownItems} onSelect={(e: any) => selectAggregation(e, index)} />
-            </Space.Compact>
-            <PlusCircleOutlined onClick={() => { addNewAggregateDrodpdown(); }} />
           </div>
-        ))
+          {
+            showAddAggregation ? (
+              <div>
+                <TreeSelect
+                  showSearch
+                  style={{ width: '100%' }}
+                  value={currentlySelectedAggreggationFieldLabel || "Select the property"}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  allowClear
+                  treeDefaultExpandAll
+                  onChange={selectAggregationField}
+                  treeData={aggregationFieldDropdownItems}
+                />
+                <Button onClick={(e) => SelectAggregation()}>Submit</Button>
+              </div>
+            ) : (
+              <Button icon={<PlusOutlined />} onClick={(e) => showAddAggregationContainer()}> Add Aggregation</Button>
+            )
+          }
+        </div>
+      }
+
+      {
+        showAfterTableSelected && 
+        <div>
+          {
+            selectedAggregations.length > 0 && (
+              <div>
+                {selectedAggregations.map((value, index) => (
+                  <div key={index}>
+                    <div>
+                      {value.field}
+                    </div>
+                    <div>
+                      {value.method}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          }
+        </div>
       }
 
       <div className="flex w-full">
         <Tabview />
       </div>
+
+      <PlaceholderTest />
 
     </>
   );
