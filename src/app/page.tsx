@@ -1641,7 +1641,7 @@ export default function Home(this: any) {
             })
             nodeChild.push({
               nodeId: table.name + '.' + option.name,
-              nodeText: table.name + '.' + option.name,
+              nodeText: option.name,
               type: option.type,
               componentText: lookupName + '.' + option.name
             })
@@ -1722,7 +1722,7 @@ export default function Home(this: any) {
             })
             queryBuilderColumns.push({
               nodeId: table.name,
-              nodeText: table.name,
+              nodeText: lookupName,
               expanded: true,
               selectable: false,
               nodeChild: nodeChild

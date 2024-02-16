@@ -53,7 +53,7 @@ export default function PlaceholderTest() {
             className="placeholder"
             onDragOver={(event) => handleDragOver(event, index)}
             onDrop={(event) => handleDrop(event, index)}
-            style={{ visibility: closePlaceholderIndexes.includes(index) ? 'visible' : 'hidden' }}
+            style={{ visibility: closePlaceholderIndexes.includes(index) ? 'visible' : 'hidden', width: closePlaceholderIndexes.includes(index) ? '150px' : '0px', height: closePlaceholderIndexes.includes(index) ? '50px':'0px'}}
           >
             Target
           </div>
